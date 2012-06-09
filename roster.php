@@ -26,6 +26,7 @@
 		<?
     print "</head>";
     print "<body>";
+    print "<div id=container>"; 
     print $banner;
     print $navBar;
     print "<div id='ttlBar'>Team Roster <span onclick='help_win()'><img src='images/q.jpg' alt='Help' title='Help' border='0'></span></div>";
@@ -343,9 +344,7 @@
               </form></td>";
           if (!$season_over) print "<td><form>
                 <input type='button' value='Game Card'
-                onclick='window.open(\"roster_card.php?team_id=$team_id&season_id=$season_id\",
-                	\"roster_win\",
-                	\"height=1000; width=1200, location=no, scrollbars=yes, resizeable=yes, menubar=yes, toolbar=yes\")'>
+                onclick='window.location=\"games.php?season_id=$season_id&team_id=$team_id\"'>
               </form></td>";
           if ($adm) {
             print "<td><form method='get' action='changeTeamName.php'>
@@ -362,6 +361,10 @@
     if ($mgr) print "<input type='button' value='View Balance' onClick='window.location=\"invoice.php?team_id=$team_id&season_id=$season_id\"' class='pointer'>";
     }
     print "</div>";
+    print "<div id='footer-spacer'></div>";
+    print "</div >"; //end container
+    print $footer;
+
     print "</body>";
     print "</html>";
   }else include("login.php");

@@ -6,6 +6,7 @@
 		print "<link href='tmsl.css' rel='stylesheet' type='text/css'>";
 		print "</head>";
 		print "<body>";
+                print "<div id=container>";
 		print $banner;
 		print $navBar;
 		print "<div id='ttlBar'>Home</div>";
@@ -45,13 +46,17 @@
 		if ($myGames) {
 			print "<br/><br/><span class='instrTtl'>Upcoming Games for Teams You Manage</span><br/>
 				<span class='instr'>You can print the game roster from here when you see the
-				<img src='images/page_white_edit.png' alt='print roster'> icon<br/>
-				The icon will appear 3 days before game date</i></span><br/>";
+				<img src='images/printer.png' alt='print roster'> icon<br/>
+				The icon will appear $days_before days before game date</i></span><br/>";
 			print "$myGames";
 		}
 		$myTeams = teamList($_SESSION['logon_uid']);
 		print "$myTeams";
+		print "</div >"; //end myTeams
 
+                print "<div id='footer-spacer'></div>";
+		print "</div >"; //end container
+                print $footer;
 		print "</body>";
 		print "</html>";
 	}else include("login.php");
@@ -77,6 +82,7 @@
 	}
 
 		function gameList($uid, $fcn) {
+                        global $days_before;
 			if ($fcn == 'ref')
 				$sql="SELECT g.uid, team_h, team_v, game_loc, DATE_FORMAT(game_dt, '%Y-%m-%d') as game_dt, season_uid,
 					DATE_FORMAT(game_tm, '%H:%i') as game_tm, edit_right,
@@ -115,15 +121,15 @@
 				$str .= "<td>{$rec['game_tm']}</td>";
 				$str .= "<td>".getTeamName($rec['team_h'], $rec['season_uid'])."</td>";
 				$str .= "<td>".getTeamName($rec['team_v'], $rec['season_uid'])."</td>";
-				if ($fcn == 'mgr' && $rec['dif'] >= 0 && $rec['dif'] < 3) {
+				if ($fcn == 'mgr' && $rec['dif'] >= 0 && $rec['dif'] < $days_before) {
 					if (hasPermission(1, $rec['team_h'], $rec['season_uid']))
-						$str .= "<td><img src='images/page_white_edit.png' style='cursor:pointer'
+						$str .= "<td><img alt='x' src='images/printer.png' style='cursor:pointer'
 											onclick='window.open(\"roster_card.php?team_id={$rec['team_h']}&game_uid={$rec['uid']}\",
 											 \"roster_win\",
 											 \"height=1000; width=1200, location=no, scrollbars=yes, resizeable=yes, menubar=yes\")'
 											title='print game card' alt='print game card' border='0'></td>";
 					if (hasPermission(1, $rec['team_v'], $rec['season_uid']))
-						$str .= "<td><img src='images/page_white_edit.png' style='cursor:pointer'
+						$str .= "<td><img alt='print' src='images/printer.png' style='cursor:pointer'
 											onclick='window.open(\"roster_card.php?team_id={$rec['team_v']}&game_uid={$rec['uid']}\",
 											 \"roster_win\",
 											 \"height=1000; width=1200, location=no, scrollbars=yes, resizeable=yes, menubar=yes\")'
