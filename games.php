@@ -56,6 +56,7 @@
 	print "</head>";
 	if ($season_id) $onld="onload='showTeams($season_id);'";
 	print "<body $onld>";
+        print "<div id=container>"; 
 	echo "<div id='testdiv1' style='position:absolute;visibility:hidden;background-color:white;layer-background-color:white;'></div>";
 	print $banner;
 	print $navBar;
@@ -164,7 +165,7 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 				$str = "";
 
 				if ($rec2['game_dt'] <> $last_dt || $rec2['season_uid'] <> $last_szn)
-					$str .= "<tr><td colspan=10 style='border-bottom: 3px solid black;'>&nbsp</td></tr>";
+					$str .= "<tr><td colspan=10 style='border-bottom: 3px solid black;'>".getSeasonName($rec2['season_uid'])."</td></tr>";
 
 				$str .= "<tr>";
 
@@ -194,9 +195,9 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 
 				$str .= "<td>".showTimeDropDown("game_tm_$uid", 800, 2200, 15, $rec2['game_tm'], $edit, array(0=>"--Select--"), "onchange='upd_fld()'")."</td>";
 				//$str .= "<td>".getTeamName($rec2['team_h'], $rec2['season_uid']);
-				$str .= "<td>".getSelect("team_h_$uid", $arrTms, $arrFirstOpts=array(0=>"--Select--"), $rec2['team_h'], "onchange='upd_fld()'", $edit);
-				if ($adm && $rec2['dif']>=0 && $rec2['dif']<3)
-					$str .= "<img src='images/page_white_edit.png'
+				$str .= "<td><a href='".getTmLnk($rec2['team_h'], $rec2['season_uid'])."'>".getSelect("team_h_$uid", $arrTms, $arrFirstOpts=array(0=>"--Select--"), $rec2['team_h'], "onchange='upd_fld()'", $edit)."</a>";
+				if ($adm && $rec2['dif']>=0 && $rec2['dif']<$days_before)
+					$str .= "<img src='images/printer.png'
 										onclick='window.open(\"roster_card.php?team_id={$rec2['team_h']}&game_uid={$uid}\",
 										 \"roster_win\",
 										 \"height=1000; width=1200, location=no, scrollbars=yes, resizeable=yes, menubar=yes\")'
@@ -205,9 +206,9 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 				if ($rec2['team_h_pts']>=0) {
 					$str .= "<td>{$rec2['team_h_score']}</td><td>{$rec2['team_v_score']}</td>";
 				} else $str .= "<td>&nbsp;-&nbsp; </td><td> &nbsp;-&nbsp; </td>";
-				$str .= "<td>".getSelect("team_v_$uid", $arrTms, $arrFirstOpts=array(0=>"--Select--"), $rec2['team_v'], "onchange='upd_fld()'", $edit);
-				if ($adm && $rec2['dif']>=0 && $rec2['dif']<3)
-					$str .= "<img src='images/page_white_edit.png'
+				$str .= "<td><a href='".getTmLnk($rec2['team_v'], $rec2['season_uid'])."'>".getSelect("team_v_$uid", $arrTms, $arrFirstOpts=array(0=>"--Select--"), $rec2['team_v'], "onchange='upd_fld()'", $edit)."</a>";
+				if ($adm && $rec2['dif']>=0 && $rec2['dif']<$days_before)
+					$str .= "<img src='images/printer.png'
 										onclick='window.open(\"roster_card.php?team_id={$rec2['team_v']}&season_id={$rec2['season_uid']}&sbm=1&game_date={$rec2['game_dt']}\",
 										 \"roster_win\",
 										 \"height=1000; width=1200, location=no, scrollbars=yes, resizeable=yes, menubar=yes\")'
@@ -239,6 +240,9 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 		}
 	} else print "Select the criteria for the games you wish to see and press ok.";
 	print "</div>";
+print "<div id='footer-spacer'></div>";
+print "</div >"; //end container
+print $footer;
 	print "</body>";
 	print "</html>";
 ?>

@@ -586,4 +586,7 @@
 			return dbInsert('tmsl_team_manager', array('user_uid'=>$player_id, 'team_uid'=>$team_id, 'season_uid'=>$season_id));
 		return 0;
 	}
+        function getTmLnk ($tm, $szn) {
+            return "roster.php?season_id=$szn&team_id=$tm";
+        }
 ?>
