@@ -27,7 +27,8 @@
 	$navBar = 	"<div id='navBar'>
 					<table align='center'>
 						<tr>
-							<td><a href='index.php'>Home</a> | </td>";
+							<td><a href='index.php'>Home</a> | </td>
+							<td><a href='standings.php'>Standings</a> | </td>";
 	if (!$isRef || $adm) $navBar .=
 							"<td><a href='roster.php'>Teams</a> | </td>";
 	$navBar .=
