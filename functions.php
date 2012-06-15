@@ -589,4 +589,15 @@
         function getTmLnk ($tm, $szn) {
             return "roster.php?season_id=$szn&team_id=$tm";
         }
+        
+        function getSeasonDropdown ($dt) {
+	    $sql=" SELECT DISTINCT s.uid, CONCAT( d.name, ' -- ', s.name ) AS nm
+		FROM tmsl_season s
+		INNER JOIN tmsl_division d ON s.division_uid = d.uid
+		WHERE s.stop_date >= '$dt' 
+		ORDER BY  s.start_date desc, d.rank";
+		$arrSeasons=buildSimpleSQLArr("uid", "nm", $sql);
+            
+           return getSelect("season_id", $arrSeasons, array(0=>"--Select a Season--"), $season_id, "onchange='submit();'");	    
+        }
 ?>
