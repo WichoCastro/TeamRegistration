@@ -5,8 +5,9 @@ body {
 	margin-top: 1px;
 	margin-bottom: 0px;
 	font-size: 10pt;
-	font-family: Arial;
+	font-family: sans-serif;
         height: 100%;
+        background-color: #FFF8FF;
 }
 TD {
 	color: #444444;

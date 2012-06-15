@@ -98,13 +98,13 @@
           WHERE s.start_date < (select start_date FROM tmsl_season WHERE uid=$season_id) AND team_uid=$team_id
           ORDER BY s.start_date DESC LIMIT 1";
         $prev_season_id=getScalar('','','','',$sql);
-        if ($prev_season_id) print "<a href='roster.php?team_id=$team_id&season_id=$prev_season_id'><img alt='Edit' src='images/arrow_left.png' title='Previous' border='0'></a>";
+        if ($prev_season_id) print "<a href='roster.php?team_id=$team_id&season_id=$prev_season_id'><img alt='Edit' src='images/arrow_left.png' title='Previous Season' border='0'></a>";
         print "<span style='font-size:18pt'>$team_nm</span>";
         $sql="SELECT uid from tmsl_season s JOIN tmsl_team_season ts ON s.uid=ts.season_uid
           WHERE s.start_date > (select start_date FROM tmsl_season WHERE uid=$season_id) AND team_uid=$team_id
           ORDER BY s.start_date LIMIT 1";
         $next_season_id=getScalar('','','','',$sql);
-        if ($next_season_id) print "<a href='roster.php?team_id=$team_id&season_id=$next_season_id'><img alt='Edit' src='images/arrow_right.png' title='Next' border='0'></a>";
+        if ($next_season_id) print "<a href='roster.php?team_id=$team_id&season_id=$next_season_id'><img alt='Edit' src='images/arrow_right.png' title='Next Season' border='0'></a>";
 
 				//team colors
 				$colors=getScalar('uid', $team_id, 'colors', 'tmsl_team');
