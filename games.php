@@ -65,6 +65,7 @@
 	//is there a date? if so, show games for that date
 	if (!$dt) $dt=date('Y-m-d');
 	if (!$numDays) $numDays=7;
+        if ($numDays % 7) {$numDays += (7 - ($numDays % 7)); print "numD=$numDays";}
 	if (!$srch) $srch = 1;
 	//verify that the date is good, and change its form
 	$dt=strtotime($dt);
@@ -105,7 +106,7 @@
 		if ($adm) print "<tr><td>Center Referee:</td><td>$refSelect</td>";
 		print "<tr><td>Weeks to show:</td>";
 		print "<td><select name='numDays'>";
-		for ($i=1;$i<17;$i++) {
+		for ($i=1;$i<53;$i++) {
 			$j=7*$i;
 			if ($j==$numDays) $sel="selected='selected'";
 			else $sel="";
@@ -164,7 +165,7 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 
 				$str = "";
 
-				if ($rec2['game_dt'] <> $last_dt || $rec2['season_uid'] <> $last_szn)
+				if (!$season_id && ($rec2['game_dt'] <> $last_dt || $rec2['season_uid'] <> $last_szn))
 					$str .= "<tr><td colspan=10 style='border-bottom: 3px solid black;'>".getSeasonName($rec2['season_uid'])."</td></tr>";
 
 				$str .= "<tr>";
