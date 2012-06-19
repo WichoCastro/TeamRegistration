@@ -590,7 +590,7 @@
             return "roster.php?season_id=$szn&team_id=$tm";
         }
         
-        function getSeasonDropdown ($dt) {
+    function getSeasonDropdown ($dt, $season_id, $callback="'submit();'") {
 	    $sql=" SELECT DISTINCT s.uid, CONCAT( d.name, ' -- ', s.name ) AS nm
 		FROM tmsl_season s
 		INNER JOIN tmsl_division d ON s.division_uid = d.uid
@@ -598,6 +598,19 @@
 		ORDER BY  s.start_date desc, d.rank";
 		$arrSeasons=buildSimpleSQLArr("uid", "nm", $sql);
             
-           return getSelect("season_id", $arrSeasons, array(0=>"--Select a Season--"), $season_id, "onchange='submit();'");	    
-        }
+           return getSelect("season_id", $arrSeasons, array(0=>"--Select a Season--"), $season_id, "onchange=$callback");	    
+    }
+
+    function getTeamDropdown ($season_id, $team_id, $callback="'submit();'") {
+      $sql = "SELECT tname, team_uid FROM tmsl_team_season ts WHERE season_uid = $season_id ORDER BY tname";
+      $arrTeams = buildSimpleSQLArr("team_uid", "tname", $sql);
+      return getSelect("team_id", $arrTeams, array(0=>"--Select a Team--"), $team_id, "onchange=$callback");
+    }
+
+    function getPlayerDropdown ($season_id, $team_id, $player_id, $callback="'submit();'") {
+      $sql = "SELECT player_uid, CONCAT(lname, ', ', fname) AS p_name FROM tmsl_player_team pt INNER JOIN tmsl_player p ON pt.player_uid = p.uid 
+         WHERE season_uid = $season_id AND team_uid=$team_id ORDER BY p_name";
+      $arrPlayers = buildSimpleSQLArr("player_uid", "p_name", $sql);
+      return getSelect("player_id", $arrPlayers, array(0=>"--Select a Player--"), $player_id, "onchange=$callback");
+    }
 ?>
