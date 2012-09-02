@@ -40,7 +40,7 @@
 			print "<tr><td colspan='2' align='center'><input type='submit' value='ok'></td></tr>";
 			print "</table>";
 			print "</form>";
-			print "<input type='button' value='Search Teams' onclick='window.location=\"team.php\"'>";
+			print "<input type='button' value='Search Teams' onclick='window.location=\"findTeam.php\"'>";
 			print "</div>";
 			print "</body>";
 			print "</html>";

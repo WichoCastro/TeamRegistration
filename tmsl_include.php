@@ -1,4 +1,6 @@
 <?
+  include_once("tmsl_config.php");
+
 	/*--------bits-----------
 	  1 = team manager
 	  2 = edit all teams
@@ -9,6 +11,7 @@
 	//$arrPlayerFields["case when now() between ifnull(sus.start_date, '0000-00-00') and ifnull(sus.stop_date, '0000-00-00') then 1 else 0 end"]="Suspended";
 	$arrPlayerFields["pt.registered"]="Registered";
 	$arrPlayerFields["pt.notes"]="Notes";
+	$arrPlayerFields["pt.waiver_signed"]="Waiver";
 	$arrPlayerFields2=array("p.uid"=>"ID", "p.lname"=>"LastName", "p.fname"=>"FirstName", "p.mname"=>"Middle", "p.email"=>"Email", "p.addr"=>"Address", "p.city"=>"City", "p.state"=>"State", "p.zip"=>"Zip", "p.phone"=>"Phone");
 	$arrPlayerFields2["DATE_FORMAT(p.dob,'%m/%d/%Y')"]="DOB";
 	$arrPlayerFields2["DATE_FORMAT(p.dateJoinedTMSL,'%m/%d/%Y')"]="JoinedTMSL";
@@ -27,8 +30,7 @@
 	$navBar = 	"<div id='navBar'>
 					<table align='center'>
 						<tr>
-							<td><a href='index.php'>Home</a> | </td>
-							<td><a href='standings.php'>Standings</a> | </td>";
+							<td><a href='index.php'>Home</a> | </td>";
 	if (!$isRef || $adm) $navBar .=
 							"<td><a href='roster.php'>Teams</a> | </td>";
 	$navBar .=
@@ -37,9 +39,9 @@
 
 
 
-	if ($_SESSION['editTeams']) $navBar .=
+	if ($adm) $navBar .=
 							"<td><a href='player.php'>Players</a> | </td>
-							 <td><a href='season.php'>Seasons</a> | </td>
+							 <td><a href='manageSeasons.php'>Seasons</a> | </td>
 							 <td><a href='report.php'>Reports</a> | </td>
 							 <td><a href='admin.php'>Admin</a> | </td>";
 

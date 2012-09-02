@@ -2,16 +2,31 @@
   /******Page takes team_id or not -- diff is no jersey id, and caption is diff if no team_id******/
 	include_once("session.php");
 	if ($_SESSION['logged_in']) {
-		if ($_SESSION['mask'] & 4) $adm=true;else $adm=false;
-		error_reporting(0);
-		if ($_GET['uid']) $uid=$_GET['uid'];
-		if ($_GET['edit']) $edit=$_GET['edit'];
+		if (!hasPermissionEditPlayer($_SESSION['mask'], $uid)) header('Location:index.php');
+		if ($_SESSION['mask'] & 128) $adm=true;else $adm=false;
+		//does the user have addTmPriv?
+		$mask = getScalar('player_uid', $uid, 'mask', 'tmsl_user');
+		$usrAddTmPriv = $mask & 2;
 		if ($_GET['add']) {$uid=0;}
-		//if (!$team_id) $team_id=$_SESSION['team_uid'];
 		if (!$season_id) $season_id=$_SESSION['season_uid'];
 		$redir="Location: $url";
 		if (!is_numeric($Jersey)) $Jersey=0;
 		if ($upd || $ins) {
+			if ($addTmPrivCk) {
+				if (!$mask)
+					addPlayertoDB($uid, array());
+				if(!$usrAddTmPriv){
+					$mask +=  2;
+					dbUpdate('tmsl_user', array('mask'=>$mask), array('player_uid'=>$uid));
+					$usrAddTmPriv = true;
+				} 
+			} else {
+				if ($usrAddTmPriv) {
+					$mask -= 2; 
+					dbUpdate('tmsl_user', array('mask'=>$mask), array('player_uid'=>$uid));
+					$usrAddTmPriv = false;
+				}	
+			}
 			foreach ($arrPlayerFields2 as $colName=>$display) {
 				if (!strcmp(substr($colName,0,5), 'DATE_')) {
 					$colName=substr($colName, 12, strpos($colName, ',')-12);
@@ -24,8 +39,7 @@
 					if ($$display) $$display=date('Y-m-d', $$display);
 					else $$display='';
 				}
-				//if (strcmp($colName, 'jersey_no'))
-				if (strcmp($colName, 'DOB_validated') && strcmp($colName, 'jersey_no') && strcmp($colName, 'p.uid') && strcmp($colName, 'p.dateJoinedTMSL')) {
+				if (strcmp($colName, 'p.email') && strcmp($colName, 'DOB_validated') && strcmp($colName, 'jersey_no') && strcmp($colName, 'p.uid') && strcmp($colName, 'p.dateJoinedTMSL')) {
 					$fldArr[]=substr($colName,2);
 					$valArr[]=$$display;
 					$setArr[]="$colName='".trim($$display)."'";
@@ -33,6 +47,7 @@
 					$data[$col] = trim($$display);
 				}
 			}
+
 			if (!$LastName) $msg .= "<br/>Please enter a last name";
 			if (!$FirstName) $msg .= "<br/>Please enter a first name";
 			//Is there already a player by that name in the db?  If so, error:
@@ -66,13 +81,9 @@
 		}
 		if ($ins) {
 			if (!$msg) {
-				//$sql="INSERT tmsl_player (".implode(", ",$fldArr).") VALUES ('".implode("', '",$valArr)."')";
-				//mysql_query($sql) or die("ERROR: " . mysql_error());
-				//$player_id = mysql_insert_id();
-        //print $sql;exit;
-				$player_id = addPlayertoDB($data);
+				$uid = addPlayertoDB($data);
 				if ($team_id) {
-					$msg=addPlayerToTeam($player_id, $team_id, $season_id);
+					$msg=addPlayerToTeam($uid, $team_id, $season_id);
 				}
 				if (strlen($msg)<=1) {
 					if (!$url) $redir="Location: roster.php";else $redir="Location:$url";
@@ -81,6 +92,10 @@
 			}
 
 		}
+
+		//handle email here:
+                if ($Email) $msg = addEmail($uid, $Email);
+
 		if ($really_del && $_SESSION['mask'] & 4) {
 			dbDelete('tmsl_player', array('uid'=>$ID), true);
 			header("Location:player.php");
@@ -144,7 +159,7 @@
 		$p_uid=str_pad($uid, 5, "0", STR_PAD_LEFT);
 		if (file_exists("main/$p_uid.jpg")) $img="$p_uid.jpg";
 		if (!$img) if (file_exists("main/$p_uid.png")) $img="$p_uid.png";
-		if (!$img) $img='00000.jpg';
+		if (!$img) $img='image_not_found.jpg';
 		print "<a href='main/$img' target='_blank'><img src='main/$img' alt='photo' width='100' border='0'></a><br/>";
 		if ($player['LastName']) print $player['FirstName']." ".$player['Middle']." ".$player['LastName'];
 		else print "New Player";
@@ -171,6 +186,8 @@
 					if ($type="text") print "</td></tr>";
 				}
 			}
+            $addTmPrivCk = $usrAddTmPriv ? 'checked' : '';
+            print "<tr><td>Add Team Privilige</td><td><input type='checkbox' id='addTmPriv' name='addTmPrivCk' $addTmPrivCk></td></tr>";
 			print "</table>";
 			if ($edit) $action="upd"; else $action="ins";
 		}

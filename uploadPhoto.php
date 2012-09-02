@@ -4,7 +4,8 @@
 		if ($_SESSION['mask'] & 4) $adm=true;else $adm=false;
 		$max_sz=1000000;
 
-		if (!hasPermissionEditPlayer($_SESSION['mask'], $player_id) || !$player_id) header("Location:roster.php");
+		if (!$player_id) $player_id = $_SESSION['logon_uid'];
+		//if (!hasPermissionEditPlayer($_SESSION['mask'], $player_id) || !$player_id) header("Location:roster.php");
 		if ($noPhotoNeeded) {
 			dbUpdate('tmsl_player', array('pic_on_file'=>1), array('uid'=>$player_id));
 			header("Location:roster.php");
@@ -21,16 +22,16 @@
 			$tmp_nm = $tmp_file['tmp_name'];
 			$orig_nm = $tmp_file['name'];
 			$ext=strtolower(substr($orig_nm,-3));
-			if (strcasecmp($ext,'jpg')) {
-				$msg = "This site only accepts images of type jpg.  Yours is '$ext'.<br/>";
+			if (strcasecmp($ext,'jpg') && strcasecmp($ext,'png')) {
+				$msg = "This site only accepts images of type jpg or png.  Yours is '$ext'.<br/>";
 			} else {
 				$sz=filesize($tmp_nm);
 				if ($sz > $max_sz) {
 					$msg = "Filesize is $sz; please upload a file less than $max_sz<br/>";
 				} else {
-					$targ="main/".str_pad($player_id, 5, "0", STR_PAD_LEFT).".jpg";
+					$targ="main/".str_pad($player_id, 5, "0", STR_PAD_LEFT).".$ext";
 					if (file_exists($targ))  {
-						$re_name=substr($targ, 0, 10)."_".date('Ymdhis', filectime($targ)).".jpg";
+						$re_name=substr($targ, 0, 10)."_".date('Ymdhis', filectime($targ)).".$ext";
 						//print "att rename to $re_name";
 						rename($targ, $re_name);
 					}
@@ -39,8 +40,8 @@
 
 				if ($success) {
 					dbUpdate('tmsl_player', array('pic_on_file'=>1), array('uid'=>$player_id));
-					header("Location:editPlayer.php?uid=$player_id&edit=1");
-				} else $msg = "Operation failed";
+					header("Location:basicInfo.php");
+				} else $msg .= "Operation failed";
 			}
 		}
 
@@ -54,11 +55,12 @@
 		print "<div id='ttlBar'>Photo</div>";
 		print "<div id='mainPar'>";
 		if ($msg) print "<span id='updateMsg'>$msg<br/></span><br/>";
-		print "Use this page to upload a photo, which must be a jpg less than 1MB";
+		print "Use this page to upload a photo, which must be a jpg or png less than 1MB.<br/>";
 
-		print "<form enctype='multipart/form-data' method='post'>";
+		print "<br/><form enctype='multipart/form-data' method='post'>";
 		print "File: <input type='file' name='upload_file' value='".$_POST['upload_file']."' size='50'>";
-		print "<br/><input type='submit' value='OK'>";
+		print "<br/><br/><input type='submit' value='OK'>";
+		print "<input type='button' value='Cancel' onclick='window.location=basicInfo.php'>";
 		if ($adm) print "<br/><input type='submit' name='noPhotoNeeded' value='Photo already on file'>";
 		print "</form>";
 

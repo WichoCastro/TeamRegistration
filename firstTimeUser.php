@@ -12,9 +12,9 @@
   print "<div id='ttlBar'>Create Account</div>";
   print "<div id='mainPar'>";
   if (!$player_id) {
-  print "<h3>Who are you?</h3>";
+  print "<h3>Who are you?</h3>You must be in the system to be able to create an account.<br/><br/>";
   print "<div class='dashBox'>";
-  print "<h4>Select a season and a team to let us know who you are:</h4>";    
+  print "<h4>Select a season and a team you played for to let us know who you are:</h4>";    
   print "<form>";
   print "Season: " . getSeasonDropdown(date('Y-m-d', 1284267600), $season_id);
   if ($season_id) print "<br/>Team: " . getTeamDropdown($season_id, $team_id);
@@ -22,7 +22,7 @@
   print "</div >";
   print "<h4>--or--</h4>";
   print "<div class='dashBox'>";
-  print "Search for your name:<br/>";
+  print "<h4>Search for your name:</h4>";
   print "<table border='1' align='center'>";
   print "<tr><td>Last Name:</td><td><input type='text' name='lname' value='$lname'></td></tr>";
   print "<tr><td>First Name:</td><td><input type='text' name='fname' value='$fname'></td></tr>";
@@ -93,7 +93,8 @@
       print "<br/><br/><form><input type='hidden' name='player_id' value='$player_id'>Email: <input name='email' size='40'><input type='submit' value='ok'></form>";
       if ($email) {
         print "An email has been sent to: $email";
-        $link="http://tmslregistration.com/pwdInit.php?uid=$player_id&p=$p_code";
+	$e = urlencode($email);
+        $link="http://tmslregistration.com/pwdInit.php?uid=$player_id&p=$p_code&e=$e";
         $body="Click this link to create your TMSL account: $link";
         $body.= "  You will be asked to create a password and then you can login and register electronically.";
         mail($email, 'TMSL account', $body, 'FROM:noreply@tmslregistration.com');

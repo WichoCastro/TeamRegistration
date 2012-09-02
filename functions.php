@@ -111,7 +111,7 @@
 	}
 
 	function hasPermission($mask, $team_uid, $season_uid) {
-		if ($mask & 2) return 1; //right to edit any team
+		if ($mask & 128) return 1; //right to edit any team
 		$sql="SELECT active FROM tmsl_team_manager WHERE team_uid=$team_uid AND season_uid=$season_uid AND user_uid=".$_SESSION['logon_uid'];
 		$res=mysql_query($sql);
 		$rec=mysql_fetch_array($res);
@@ -120,7 +120,8 @@
 	}
 
 	function hasPermissionEditPlayer ($mask, $player_id) {
-		if ($mask & 2) return 1; //right to edit any team
+		if ($mask & 128) return 1; //right to edit any team
+		if ($player_id == $_SESSION['logon_uid']) return 1; //edit self
 		$sql="SELECT team_uid, season_uid FROM tmsl_player_team WHERE player_uid=$player_id";
 		$res=mysql_query($sql) or die($sql." ".mysql_error());
 		while ($rec=mysql_fetch_array($res)) {
@@ -500,17 +501,23 @@
 		return $arr[0]['uid'];
 	}
 
-	function addRef($nm, $addLogOn=true) {
+	function addRef($nm, $addLogOn=true, $email='') {
 		//is there someone with this name in the player table?
-    $nm_arr = explode(',', $nm);
+    	$nm_arr = explode(',', $nm);
 		$ln = trim($nm_arr[0]);
 		$fn = trim($nm_arr[1]);
 		$fullname=strtolower($fn.$ln);
 		$arr=dbSelectSQL("SELECT uid FROM tmsl_player WHERE LOWER(CONCAT(fname,lname)) LIKE '{$fullname}%'");
 		$pid=$arr[0]['uid'];
 		if ($pid) $uid=getScalar('player_uid', $pid, 'uid', 'tmsl_user');
-		if ($uid) dbUpdate('tmsl_user', array('isReferee'=>1), array('uid'=>$uid), 0);
-		if (!$pid) {dbInsert('tmsl_player', array('fname'=>$fn, 'lname'=>$ln, dob=>'1990-01-01'));$pid=mysql_insert_id();}
+		$vals = array('isReferee'=>1);
+		if ($email) $vals['email'] = $email;
+		if ($uid) dbUpdate('tmsl_user', $vals, array('uid'=>$uid), 0);
+		if (!$pid) {
+			$vals = array('fname'=>$fn, 'lname'=>$ln, dob=>'1990-01-01');
+			if ($email) $vals['email'] = $email;
+			dbInsert('tmsl_player', $vals);$pid=mysql_insert_id();
+		}
 		if (!$uid && $addLogOn && $pid) {
 			addPlayerToUserTbl($pid, array('isReferee'=>1));
 		}
@@ -518,7 +525,6 @@
 	}
 
 	function addPlayertoDB($data) {
-    print_r($data);
     $email = $data['email'];
     unset($data['email']);
     $pid = dbInsert('tmsl_player', $data);
@@ -529,16 +535,23 @@
     }
     return $pid;
 	}
-
-  function addEmail($pid, $email) {
-    //check format
-    if (!filter_var($e, FILTER_VALIDATE_EMAIL)) 
-      return 0;
+ 
+  function invalidEmail($pid, $email) {
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) 
+      return "$email is not a valid email address.";
     //see if it exists; email must be unique
     $exists = getScalar('email', $email, 'uid', 'tmsl_player');
-    if ($exists)
-      return 0;
-    dbUpdate('tmsl_player', array('email'=>$email), array('uid'=>$pid));
+    if ($exists && $exists != $pid)
+      return "the email $email belongs to someone else.";
+    return false;
+  }
+
+  function addEmail($pid, $email) {
+    $invEml = invalidEmail($pid, $email);
+    if (!$invEml)
+      if (dbUpdate('tmsl_player', array('email'=>$email), array('uid'=>$pid)))
+        return "email updated.";
+    return $invEml;
   }
   
   function notifyPlayerAccount($pid, $email) {
@@ -569,7 +582,7 @@
 		//$nm.=getScalar('uid', $uid, 'fname', 'tmsl_player');
 		//$unm=getUsernameFromName($nm);
 		//$vals['name']=$unm;
-		$vals['name']='';
+		//$vals['name']='';
 		//$vals['pwd']=sha1(strtolower($unm));
 		$pwd = genPwd($uid);
 		$vals['pwd'] = sha1($pwd);
@@ -625,7 +638,9 @@
 	}
 
 	function addTeamRep($player_id, $team_id, $season_id) {
-		addPlayerToUserTbl($player_id);
+		//must have an email
+		$e = getUserEmail($player_id);
+		addPlayerToUserTbl($player_id, array('name'=>$e));
 		$arr=dbSelectSQL("SELECT count(*) as ct FROM tmsl_team_manager WHERE user_uid=$player_id AND team_uid=$team_id AND season_uid=$season_id");
 		if (!$arr[0]['ct'])
 			return dbInsert('tmsl_team_manager', array('user_uid'=>$player_id, 'team_uid'=>$team_id, 'season_uid'=>$season_id));
@@ -636,6 +651,9 @@
         }
         
     function getSeasonDropdown ($dt, $season_id, $callback="'submit();'") {
+      if (!$dt) { //pass in a zero date to do the calculations here 
+        $dt = getScalar('uid', $season_id, 'start_date', 'tmsl_season');
+      }
 	    $sql=" SELECT DISTINCT s.uid, CONCAT( d.name, ' -- ', s.name ) AS nm
 		FROM tmsl_season s
 		INNER JOIN tmsl_division d ON s.division_uid = d.uid
@@ -660,7 +678,7 @@
     }
 
   function getRegistrationStatus ($uid) {
-    $sql="SELECT pt.registered, tname, pt.season_uid, balance, waiver_signed, pt.team_uid FROM tmsl_player_team pt 
+    $sql="SELECT pay_pending, pt.registered, tname, pt.season_uid, balance, waiver_signed, pt.team_uid FROM tmsl_player_team pt 
       INNER JOIN tmsl_season s ON s.uid=pt.season_uid 
       INNER JOIN tmsl_team_season ts ON s.uid=ts.season_uid AND ts.team_uid=pt.team_uid
       WHERE player_uid=$uid and s.stop_date > now()";
@@ -678,7 +696,7 @@
 		return "Not suspended";
 	}
 
-	function updateRegStatus($uid, $team, $season) {
+  function updateRegStatus($uid, $team, $season) {
     $susp_status = isCurrentlySuspended($uid);
     if ($susp_status != "Not suspended") return false;
     $sql = "SELECT balance, registered, waiver_signed FROM tmsl_player_team 
@@ -687,11 +705,11 @@
     $rec = mysql_fetch_assoc($res);
     foreach ($rec as $k=>$v) $$k=$v;
     if ($registered) {
-      if ($waiver_signed and !$balance) $uarr = array('registered'=>2);
+      if ($waiver_signed and !$balance) $uarr = array('registered'=>2, 'pay_pending'=>0);
       else $uarr = array('registered'=>1);
       dbUpdate('tmsl_player_team', $uarr, array('player_uid' => $uid, 'team_uid' => $team, 'season_uid' => $season));
     }
     return true;
-	}
+  }
 		 	
 ?>

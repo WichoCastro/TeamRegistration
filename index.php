@@ -52,16 +52,16 @@
     	print "<tr><td height='50px' width='300px' align='center'><a href='basicInfo.php'>Basic Info</a></td></tr>";
     	print "<tr><td height='50px' width='300px' align='center'><a href='regStatus.php'>Registration Status</a></td></tr>";
     	print "<tr><td height='50px' width='300px' align='center'><a href='payBalance.php'>Payments</a></td></tr>";
-    	print "<tr><td height='50px' width='300px' align='center'><a href='playerCard.php'>Player Card</a></td></tr>";
+    	print "<tr><td height='50px' width='300px' align='center'><span title='coming soon'>Player Card</span></td></tr>";
 		print "</table>";
 
 		print "</div >"; //end myTeams
-		if ($myGames || $adm) print "<br/><a href='addTeam.php'>add a new team</a>";
+		if ($addTmPriv) print "<br/><a href='addTeam.php'>add a new team</a>";
 		print "</div >"; //end mainPar
 		
-    print "<div id='footer-spacer'></div>";
+    	print "<div id='footer-spacer'></div>";
 		print "</div >"; //end container
-    print $footer;
+    	print $footer;
 		print "</body>";
 		print "</html>";
 	}else include("login.php");

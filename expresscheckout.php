@@ -26,7 +26,7 @@ $paymentType = "Sale";
 //'
 //' This is set to the value entered on the Integration Assistant 
 //'------------------------------------
-$returnURL = "http://3r3w.org/tmsl/payReview.php";
+$returnURL = "http://tmslregistration.com/payReview.php?player_id={$_POST['player_id']}";
 //$returnURL = "localhost/tmsl/payBilling.php";
 //'------------------------------------
 //' The cancelURL is the location buyers are sent to when they hit the
@@ -34,7 +34,7 @@ $returnURL = "http://3r3w.org/tmsl/payReview.php";
 //'
 //' This is set to the value entered on the Integration Assistant 
 //'------------------------------------
-$cancelURL = "http://3r3w.org/tmsl/payCancel.php";
+$cancelURL = "http://tmslregistration.com/basicInfo.php";
 
 //'------------------------------------
 //' Calls the SetExpressCheckout API call

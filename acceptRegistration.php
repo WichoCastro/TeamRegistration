@@ -14,7 +14,7 @@
 					dbInsert('tmsl_team_season', $arr, 1);
 				}
 				foreach ($player_id as $pid) {
-					dbUpdate('tmsl_player_team', array('registered'=>2, 'balance'=>0), array('team_uid'=>$team_id, 'season_uid'=>$season_id, 'player_uid'=>$pid));
+					dbUpdate('tmsl_player_team', array('registered'=>2, 'balance'=>0, 'pay_pending'=>0), array('team_uid'=>$team_id, 'season_uid'=>$season_id, 'player_uid'=>$pid));
 				}
 				dbUpdate('tmsl_team', array('bond_owed'=>0), array('uid'=>$team_id));
 				header("Location:reportRegistered.php");

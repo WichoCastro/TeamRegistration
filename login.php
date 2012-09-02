@@ -24,8 +24,9 @@
 	</form>
 </table>
 <div id='mainPar'>Trouble logging in?
+  <br/><a href='firstTimeUser.php'>Create account</a>	
   <br/><a href='sendPwd.php'>Request forgotten password</a>
-  <br/><a href='mailto:support@tmslregistration.com'>Contact Webmaster</a>
+  <br/><a href='mailto:support@tmslregistration.com'>Contact webmaster</a>
 </div>
 </div>
 </body>

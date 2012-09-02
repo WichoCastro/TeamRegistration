@@ -48,7 +48,7 @@
 		print "Cost Per Player: $cost_per_player<br/>";
 		print "Last Date to Register a Team: $last_day_team<br/>";
 		print "Last Date to Register a Player: $last_day_player<br/>";
-		print "<a href='season.php?editSeason=1&season_id=$season_id'><img alt='Edit' src='images/pencil.png' title='Edit Details' border='0'>Edit Season Details</a><br/><br/>";
+		print "<a href='manageSeasons.php?editSeason=1&season_id=$season_id'><img alt='Edit' src='images/pencil.png' title='Edit Details' border='0'>Edit Season Details</a><br/><br/>";
 		$sql="SELECT uid, tname, notes, case registered when 2 then 'registered' when 1 then 'registration submitted' when 3 then 'registration cancelled' else 'not registered' end as reg_status,
 			(select count(*) FROM tmsl_player_team inner_t WHERE team_uid=t.uid AND season_uid=tl.season_uid) as ct
 			FROM tmsl_team_season tl INNER JOIN tmsl_team t ON tl.team_uid=t.uid WHERE season_uid=".$_GET['season_id']." ORDER BY name";

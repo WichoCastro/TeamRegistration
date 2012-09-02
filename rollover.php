@@ -21,7 +21,7 @@
 				}
 			}elseif (mysql_num_rows($res) < 1) {
 				print "NO SEASON FOUND";
-				if (hasRegistrationAuthority($_SESSION['mask'])) print " -- <a href='season.php'>create one?</a>";
+				if (hasRegistrationAuthority($_SESSION['mask'])) print " -- <a href='manageSeasons.php'>create one?</a>";
 			}else{
 				$rec=mysql_fetch_assoc($res);
 				$new_season_id=$rec['uid'];

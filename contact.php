@@ -33,7 +33,7 @@
 			$hot='';
 			if ($show==$rec['uid']) {
 				$select_flds="SELECT DISTINCT ts.tname as Team,
-					Colors,
+					ts.colors as Colors,
 					CONCAT(fname, ' ', lname) as Name,
 					CONCAT('<a href=''mailto:',email,'''>',email,'</a>') as Email,
 					phone ";

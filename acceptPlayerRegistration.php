@@ -5,7 +5,7 @@
 			if ($commit) {
 				$notes=mysql_escape_string($notes);
 				if (!$bal) $bal=0;
-				$ret=dbUpdate('tmsl_player_team', array('registered'=>$reg_status, 'notes'=>$notes, 'balance'=>$bal),
+				$ret=dbUpdate('tmsl_player_team', array('registered'=>$reg_status, 'notes'=>$notes, 'balance'=>$bal, 'pay_pending'=>0),
 					array('player_uid'=>$uid, 'team_uid'=>$team_id, 'season_uid'=>$season_id), true, true);
 				header("Location:roster.php");
 			}

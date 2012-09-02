@@ -5,7 +5,8 @@
 	$ret=0;
 	if ($tbl) {
 		if ($tbl=='lu_values') $key='idx';
-		if ($tbl=='tmsl_player_team') $whr=array('player_uid'=>$uid, 'team_uid'=>$team_id);
+		if ($tbl=='tmsl_player_team') $whr=array('player_uid'=>$uid, 'team_uid'=>$team_id, 'season_uid'=>$season_id);
+		elseif ($tbl=='tmsl_team_season') $whr=array('season_uid'=>$season_id, 'team_uid'=>$team_id);
 		elseif ($tbl=='tmsl_team_manager')
 			if ($all)
 				$whr=array('season_uid'=>$season_id, 'team_uid'=>$team_id);

@@ -4,7 +4,7 @@
 		if ($_SESSION['mask'] & 4) $adm=true;else $adm=false;
 		if ($adm && isset($bond)) dbUpdate('tmsl_team', array('bond_owed'=>$bond), array('uid'=>$team_id),1,1);
 		if (isset($owes)) {
-			dbUpdate('tmsl_player_team', array('balance'=>$owes), array('player_uid'=>$player_id,'team_uid'=>$team_id, season_uid=>$season_id),1,1);
+			dbUpdate('tmsl_player_team', array('balance'=>$owes, 'pay_pending'=>0), array('player_uid'=>$player_id,'team_uid'=>$team_id, season_uid=>$season_id),1,1);
 		}
 		print "<html>";
 		print "<head>";
