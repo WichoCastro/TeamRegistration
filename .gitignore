@@ -2,3 +2,6 @@ sql.inc
 rmflgit.sh
 t.php
 *.sql
+put*
+getFiles.php
+getAll.php
