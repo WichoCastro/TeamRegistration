@@ -130,7 +130,7 @@
 		if ($ref_id) $refClause=" AND user_uid=$ref_id ";
 
 		$sql="SELECT g.uid FROM tmsl_game g LEFT JOIN tmsl_game_assign ga ON g.uid=ga.game_uid AND edit_right=2 WHERE game_dt >= '$dt' AND game_dt < DATE_ADD('$dt', INTERVAL $numDays DAY)
-					$sznClause $locClause $tmClause $refClause ORDER BY game_dt, season_uid, game_tm";
+					$sznClause $locClause $tmClause $refClause ORDER BY game_dt, season_uid, game_tm";					
 		$gms=dbSelectSQL($sql);
 		//if ($adm && $season_id) print "<a href='index.php?dt=$dt&season_id=$season_id&numWeeks=$numWeeks&add=1'>New Game</a>";
 		$arrDt=dbSelectSQL("SELECT DATE_FORMAT('$dt', '%M %e') as sd, DATE_FORMAT(DATE_ADD('$dt', INTERVAL $numDays DAY), '%M %e') as ed");
@@ -159,7 +159,7 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 					DATE_FORMAT(game_tm, '%H:%i') as game_tm,
 					DATEDIFF(game_dt, now()) as dif,
 					team_h, team_v, season_uid, game_loc, team_h_pts, team_v_pts, team_h_score, team_v_score
-					FROM tmsl_game WHERE uid=$uid";
+					FROM tmsl_game WHERE uid=$uid";					
 				$arr=dbSelectSQL($sql);
 				$rec2=$arr[0];
 
@@ -228,7 +228,10 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 			}
 			if ($adm) {
 				if ($edit) print "<tr><td colspan='10'><input type='submit' name='sbm' id='sbm' disabled='true' style='color:#ccc; background-color:#ddd' title='no changes to save' value='save changes'>";
-				else print "<tr><td colspan='10'><input type='submit' name='edit' value='edit'><input type='button' onclick='window.location=\"upl.php\"' value='upload'>";
+				else {
+				  print "<tr><td colspan='10'><input type='submit' name='edit' value='edit'><input type='button' onclick='window.location=\"upl.php\"' value='upload CSV'>";
+				  print "<input type='button' onclick='window.location=\"assignr_pull.php\"' value='sync with assignr' title='Pull data from assignr.com for the next week'>";
+				}  
 				if ($season_id) print "<input type='submit' name='add' value='New Game'>";
 				print "</td></tr>";
 			}
@@ -236,8 +239,11 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 			print "</form>";
 		} else {
 				print "No Games to Show";
-				if ($adm) print "<br/><input type='button' onclick='window.location=\"upl.php\"' value='upload'>";
-				if ($adm && $season_id) print "<input type='submit' name='add' value='New Game'>";
+				if ($adm) {
+				  print "<br/><input type='button' onclick='window.location=\"assignr_pull.php\"' value='sync with assignr' title='Pull data from assignr.com for the next week'>";
+				  print "<input type='button' onclick='window.location=\"upl.php\"' value='upload CSV'>";
+				  if ($season_id) print "<input type='submit' name='add' value='New Game'>";
+				}
 		}
 	} else print "Select the criteria for the games you wish to see and press ok.";
 	print "</div>";

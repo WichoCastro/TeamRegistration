@@ -52,13 +52,26 @@
 			//if ($rec['primary_captain']) $sel="checked='checked'"; else $sel="";
 			//print "<tr><td><input type='radio' value='{$rec['uid']}' name='primary_captain' $sel></td>";
 			print "<tr>";
-			print "<td>{$rec['fname']} {$rec['lname']}</td></tr>";
+			print "<td>{$rec['fname']} {$rec['lname']}";
+			if ($_SESSION['mask'] & 4) print "<span onclick='removeTmRep({$rec['uid']})';><img src='images/delete.png'></span>"; 
+			print "</td></tr>";
 		}
 		print "</table>";
 		print "<p>To delete a team rep, please contact a site administrator.</p>";
 		print "<input type='button' value='Back to Roster' onclick='window.location=\"roster.php?team_id=$team_id&season_id=$season_id\"'>";
 		print "</div>";
 		print "</body>";
+		?>
+		<script language='JavaScript' type='text/javascript' src='prototype.js'></script>
+		<script>
+			function removeTmRep(id) {
+				var url = "ajax_del.php";
+				var params = "tbl=tmsl_team_manager&player_id=" + id + "&team_id=<?=$team_id?>&season_id=<?=$season_id?>";
+				var myAjax=new Ajax.Request(url, {method: 'post', parameters: params, 
+				  onComplete: function() {document.location.href='roster.php?team_id=<?=$team_id?>&season_id=<?=$season_id?>';} });
+			}
+		</script>
+		<?
 		print "</html>";
 	}else include("login.php");
 ?>

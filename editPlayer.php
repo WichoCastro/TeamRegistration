@@ -29,6 +29,8 @@
 					$fldArr[]=substr($colName,2);
 					$valArr[]=$$display;
 					$setArr[]="$colName='".trim($$display)."'";
+					$col = substr($colName,2);
+					$data[$col] = trim($$display);
 				}
 			}
 			if (!$LastName) $msg .= "<br/>Please enter a last name";
@@ -64,9 +66,11 @@
 		}
 		if ($ins) {
 			if (!$msg) {
-				$sql="INSERT tmsl_player (".implode(", ",$fldArr).") VALUES ('".implode("', '",$valArr)."')";
-				mysql_query($sql) or die("ERROR: $sql");
-				$player_id = mysql_insert_id();
+				//$sql="INSERT tmsl_player (".implode(", ",$fldArr).") VALUES ('".implode("', '",$valArr)."')";
+				//mysql_query($sql) or die("ERROR: " . mysql_error());
+				//$player_id = mysql_insert_id();
+        //print $sql;exit;
+				$player_id = addPlayertoDB($data);
 				if ($team_id) {
 					$msg=addPlayerToTeam($player_id, $team_id, $season_id);
 				}

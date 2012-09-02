@@ -73,7 +73,7 @@
   } else { //we have a player_id
     $pwd = getScalar('player_uid', $player_id, 'pwd', 'tmsl_user');
     if ($pwd) { //he can already log in
-      print "You are already registered with our system. Go to the <a href='pReg.php'>player registration page</a>.";
+      print "You are already registered with our system. <a href='index.php'>Log in</a> to proceed.";
     } elseif($p) { //he clicked the email link 
       print "Your username will be the email address you registered with. Set your password here.";
       print "<form method='POST'>
@@ -85,22 +85,23 @@
     print "<h3>".getUserName($player_id)."</h3>";
     //check db to see if has an email on file:
     $existing_email = getScalar('uid', $player_id, 'email', 'tmsl_player');
+    //need this code to ensure no spoofing:
+    $p_code = sha1($player_id);
     //if no email on file:
     if (!$existing_email) {
       print "<br/>In order to register online, you must have an email address. Please enter a current email address. A confirmation email will be sent with further instructions.";
       print "<br/><br/><form><input type='hidden' name='player_id' value='$player_id'>Email: <input name='email' size='40'><input type='submit' value='ok'></form>";
       if ($email) {
-          print "An email has been sent to: $email";
-        $link="http://tmslregistration.com/pwdInit.php?u1=$username&s=$sha1&u=".sha1(strtolower($username));
+        print "An email has been sent to: $email";
+        $link="http://tmslregistration.com/pwdInit.php?uid=$player_id&p=$p_code";
         $body="Click this link to create your TMSL account: $link";
-        $body.= "  You will be asked to create a password and then electronically sign some forms.";
+        $body.= "  You will be asked to create a password and then you can login and register electronically.";
         mail($email, 'TMSL account', $body, 'FROM:noreply@tmslregistration.com');
       }
     } else { //email exists
-      print "<br/>This is the email we have on file for you. If you wish to change it, use the space below.";
-      print "<br/>Email: $existing_email";
-      print "<br/><form>New Email: <input name='email' size='40'><input type='submit' value='ok'></form>";
-      print "<a href='pwdInit.php?p=$player_id'>Proceed to login page</a>.";
+      print "<br/>This is the email we have on file for you. It will be your username the first time you log in.";
+      print "<br/><div class='tmslBig'>$existing_email</div>";
+      print "<a href='pwdInit.php?uid=$player_id&p=$p_code'>Set your password</a>, and then you can log in and change your email if you wish.";
     }          
   } //end else (has no log in)
   } //end we have a player_id  

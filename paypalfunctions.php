@@ -15,9 +15,9 @@
 	//' Replace <API_PASSWORD> with your API Password
 	//' Replace <API_SIGNATURE> with your Signature
 	//'------------------------------------
-	$API_UserName="pro_1312387643_biz_api1.fellows.kiva.org";
-	$API_Password="1312387689";
-	$API_Signature="AFsPIetdGFSH5P5uIhzE0fnaKd90A-tyUfuzKqzL64fezk.7pekCHDc-";
+	$API_UserName="futiaz_1342569868_biz_api1.gmail.com";
+	$API_Password="1342569892";
+	$API_Signature="AVgyxSvWMOLPbzHUwQ7-TRdc09WaAl2QZrDl7KzOBoYRt-tjhpcHhfzY";
 
 	// BN Code 	is only applicable for partners
 	$sBNCode = "PP-ECWizard";

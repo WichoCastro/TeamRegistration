@@ -96,7 +96,7 @@ if ($debug) print "date=$dt ";
 				$s=$rw['age group'];
 				$season_uid=getSeasonIDbyName($s, $dt, $dtFormat);
 if ($debug) print "season=$season_uid ";
-				if (!$season_uid) {$msg .= "No season for $s found "; }
+				if (!$season_uid) {$msg .= "No season for $s found ($dt)"; }
 
 				//venue
 				$game_loc=$rw['venue'];

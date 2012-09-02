@@ -26,15 +26,15 @@ $paymentType = "Sale";
 //'
 //' This is set to the value entered on the Integration Assistant 
 //'------------------------------------
-$returnURL = "http://tmslregistration.com/pay_x.php";
-
+$returnURL = "http://3r3w.org/tmsl/payReview.php";
+//$returnURL = "localhost/tmsl/payBilling.php";
 //'------------------------------------
 //' The cancelURL is the location buyers are sent to when they hit the
 //' cancel button during authorization of payment during the PayPal flow
 //'
 //' This is set to the value entered on the Integration Assistant 
 //'------------------------------------
-$cancelURL = "http://tmslregistration.com/pay.php";
+$cancelURL = "http://3r3w.org/tmsl/payCancel.php";
 
 //'------------------------------------
 //' Calls the SetExpressCheckout API call
@@ -42,9 +42,6 @@ $cancelURL = "http://tmslregistration.com/pay.php";
 //' The CallShortcutExpressCheckout function is defined in the file PayPalFunctions.php,
 //' it is included at the top of this file.
 //'-------------------------------------------------
-
-print "amt = $paymentAmount, urls = $returnURL, $cancelURL";
-
 $resArray = CallShortcutExpressCheckout ($paymentAmount, $currencyCodeType, $paymentType, $returnURL, $cancelURL);
 $ack = strtoupper($resArray["ACK"]);
 if($ack=="SUCCESS" || $ack=="SUCCESSWITHWARNING")
