@@ -43,8 +43,7 @@
 							 <td><a href='report.php'>Reports</a> | </td>
 							 <td><a href='admin.php'>Admin</a> | </td>";
 
-	$navBar .=	"<td><a href='chgPwd.php'>Change Password</a> | </td>
-							 <td><a href='logout.php'>Log Out (".$_SESSION['logon_name'].")</a></td>
+	$navBar .=	"<td><a href='logout.php'>Log Out (".$_SESSION['logon_name'].")</a></td>
 						</tr>
 					</table>
 				</div>";
