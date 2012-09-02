@@ -92,6 +92,7 @@
 		$gm_dt = date('Y-m-d', strtotime($rec['game_date']));
 		$h_season_id=getSeason($tm_h, $gm_dt);
 		$v_season_id=getSeason($tm_v, $gm_dt);
+print "$tm_h, $h_season_id";
 		$home_team=getTeamName($tm_h, $h_season_id);
 		$visitor=getTeamName($tm_v, $v_season_id);
 		if ($game_report_submitted && !$adm) $edit=false; else $edit=true;

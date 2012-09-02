@@ -22,11 +22,13 @@
 	$sensitiveFields=array("Address"=>1, "City"=>1, "State"=>1, "Zip"=>1, "Phone"=>1, "DOB"=>1);
 	$mandatoryFields=array("FirstName","LastName","DOB");
 	$banner = "<div id='banner'>TMSL</div>";
+	$footer = "<div id='footer'>site by <a href='http://3r3w.org'>3r3w</a></div>";
 
 	$navBar = 	"<div id='navBar'>
 					<table align='center'>
 						<tr>
-							<td><a href='index.php'>Home</a> | </td>";
+							<td><a href='index.php'>Home</a> | </td>
+							<td><a href='standings.php'>Standings</a> | </td>";
 	if (!$isRef || $adm) $navBar .=
 							"<td><a href='roster.php'>Teams</a> | </td>";
 	$navBar .=
@@ -41,9 +43,9 @@
 							 <td><a href='report.php'>Reports</a> | </td>
 							 <td><a href='admin.php'>Admin</a> | </td>";
 
-	$navBar .=	"<td><a href='chgPwd.php'>Change Password</a> | </td>
-							 <td><a href='logout.php'>Log Out (".$_SESSION['logon_name'].")</a></td>
+	$navBar .=	"<td><a href='logout.php'>Log Out (".$_SESSION['logon_name'].")</a></td>
 						</tr>
 					</table>
 				</div>";
+	$days_before=2;
 ?>

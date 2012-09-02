@@ -29,7 +29,7 @@
 				$sql="SELECT datediff(str_to_date('$game_date', '%m/%d/%Y'), now()) as dtdif";
 				$arr=dbSelectSQL($sql);
 				$d=$arr[0]['dtdif'];
-				if ($d > 3)  {print "<span class='error'>The game date must be no more than 3 days away. Please print it later.</span>";$game_date='';}
+				if ($d > $days_before)  {print "<span class='error'>The game date must be no more than $days_before days away. Please print it later.</span>";$game_date='';}
 				else $game_date = (strtotime($game_date)) ? date('m/d/Y', strtotime($game_date)) : '';
 			}
 		}
@@ -51,6 +51,7 @@
 					WHERE user_uid = {$_SESSION['logon_uid']} AND game_dt >= current_date() AND (team_h=mgr.team_uid OR team_v=mgr.team_uid)
 					AND mgr.season_uid=g.season_uid
 					ORDER BY game_dt, game_tm";
+print $sql;
 			$arr=dbSelectSQL($sql);
 			print "<tr><th>Field</th><th>Date</th><th>Time</th><th>Home</th><th>Away</th><th>&nbsp</th></tr>";
 			foreach ($arr as $rec) {
@@ -60,7 +61,7 @@
 				print "<td>{$rec['game_tm']}</td>";
 				print "<td>".getTeamName($rec['team_h'], $rec['season_uid'])."</td>";
 				print "<td>".getTeamName($rec['team_v'], $rec['season_uid'])."</td>";
-				if ($rec['dif'] >= 0 && $rec['dif'] < 3) {
+				if ($rec['dif'] >= 0 && $rec['dif'] < $days_before) {
 					if (hasPermission(1, $rec['team_h'], $rec['season_uid']))
 						print "<td><img src='images/page_white_edit.png' style='cursor:pointer'
 											onclick='window.open(\"roster_card.php?team_id={$rec['team_h']}&game_uid={$rec['uid']}\",
@@ -118,20 +119,10 @@
 
 			print printTable($sql, $hdrStyl, $rowStyl, 0, 0);
 
-			print"<div class='refInstr'><br><b>REMARKS:</b>___________________________________________________________________________________________________<br>
-				Please fill out report <b>COMPLETELY</b>, marking both yellow and red cards next to the offending player's name.  Include an explanation of
-events resulting in a player’s ejection (red card) from play using the misconduct report that will open in a separate window when you click
-the red card box next to the name of the player who was ejected.  All injuries (or any other unusual event) must be noted in the comment box.<br/>
-
-				To receive payment, game report and any player passes must be received within three (3) days of the match.<br></div>
-				<table align='center'><tr><td>Mail forms to:</td><td>&nbsp;</td></tr>
-				<tr><td>Bob & Maggie Barton</td><td>					Referee:_________________________</td></tr>
-				<tr><td>PMB 313</td><td></td></tr>
-				<tr><td>7320 North La Cholla #154	</td><td>				AR1:___________________________</td></tr>
-				<tr><td>Tucson, Arizona 85741-2305</td><td></td></tr>
-				<tr><td>Fax:797-1901<br/>Email:cactusmouse@comcast.net	</td><td>		AR2:___________________________</td></tr>
-				</table>
-				";
+			print"<div class='refInstr'><br><b>REMARKS:</b>___________________________________________________________________________________________________<br/></br>
+				Please fill out report at http://tmslregistration.com <b>COMPLETELY</b>, marking both yellow and red cards next to the offending player's name. Include an explanation of events resulting in a player's ejection (red card) from play using the misconduct report that will open in a separate window when you click the red card box next to the name of the player who was ejected.  DO NOT SEND PLAYER PASSES to the league &mdash; return them to the team. All injuries (or any other unusual event) must be noted in the comment box.
+<br/><br/>
+To receive payment, game scores and any cautions or ejections must be recorded online within 24 hours of the match. It is no longer necessary to mail reports to the league, but you should remain in possession of the paperwork for one week in the event a score report is challenged.";
 		}
 		print "</div>";
 		print "</body>";

@@ -11,7 +11,7 @@ foreach ($_POST as $key=>$val) $$key=$val;
 foreach ($_GET as $key=>$val) $$key=$val;
 $loginname=mysql_real_escape_string($loginname);
 if (strlen($loginname) > 0)	{
-	$sql="SELECT player_uid, mask, name, last_season_uid, isReferee, last_team_uid from tmsl_user where name='$loginname' AND pwd=SHA1('$pwd')";
+	$sql="SELECT u.player_uid, mask, name, last_season_uid, isReferee, last_team_uid from tmsl_user u inner join tmsl_player p on u.player_uid=p.uid where (u.name='$loginname' OR p.email='$loginname') AND pwd=SHA1('$pwd')";
 	$res=mysql_query($sql);
 	$rec=mysql_fetch_array($res);
 	if ($rec['mask']) {

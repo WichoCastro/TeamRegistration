@@ -17,7 +17,7 @@
 	<? if($try == 1)  print "<tr><td colspan='2' class='error' align='center'>Invalid Credentials. Please try again.</td></tr>"; ?>
 	<tr><td colspan="2" align="center">
 		<br/><br/>Please enter your login credentials:</td></tr>
-	<tr><td class="body">Username:<td><input type="text" name="loginname" id="loginname" class="smallform"></td></tr>
+	<tr><td class="body">Username or email:<td><input type="text" name="loginname" id="loginname" class="smallform"></td></tr>
 	<tr><td class="body">Password:<td><input type="password" name="pwd" class="smallform"></td></tr>
 	<tr><td>&nbsp;<td><input type="submit" name="submit" value="Login" class="pointer"></td></tr>
 		<input type="hidden" name="try" value="1">

@@ -6,19 +6,13 @@
 		print "<link href='tmsl.css' rel='stylesheet' type='text/css'>";
 		print "</head>";
 		print "<body>";
+                print "<div id=container>";
 		print $banner;
 		print $navBar;
 		print "<div id='ttlBar'>Home</div>";
-		//$str = "This site is currently under development.  The data are strictly fictional -- feel free to manipulate them at your leisure.<br/><br/>";
-		$str = "<br/>Welcome to the TMSL Registration Website.  Whereas traditionally, players and team representatives would go in person to the TMSL Office
-		 or someone's house, now more of that will be handled online.  You, as a team representative, will need to assemble your team using this site,
-		 submit it for registration for a specified season, and submit payment to TMSL.<br/>";
-		$str .= "<br/>The teams listed below are the ones you represent.  Begin by clicking on one of them.  If you wish to add a new team,
-		 one that's never played in TMSL before, use the 'Add a New Team' button below.  If you believe you should be the team representative for an existing
-		 team which doesn't appear below, please contact us.";
-		$str.="<br/><br/>This database is incomplete.  It consists of about 2500 players and 100 teams; not all the players are in the database, and not all teams have the correct players on them.  Please make sure to get the correct players on your team for the coming Summer Season.";
-		$str .= "<br/><br/>Payment for initial registration must be submitted as ONE CHECK or MONEY ORDER.";
-		print "<div id='mainPar'>$str</div>";
+		$str = "Welcome to the TMSL Registration Website. Here we hope to provide everything you need to register online.<br/><br/>";
+		print "<div id='mainPar'>$str";
+
 		print "<div id='myTeams' style='text-align:center'>";
 		if ($adm){
 			print "<span id='updateMsg'>You're an administrator.</span><br/>";
@@ -38,20 +32,36 @@
 					<span class='instr'>Click on the
 					<img src='images/report.png' alt='print roster'> icon
 					for the game report</span><br/>";
-				print "$myGames";
+				print "$myGames<br/><br/>";
 			}
 		}
 		$myGames = gameList($_SESSION['logon_uid'], 'mgr');
 		if ($myGames) {
-			print "<br/><br/><span class='instrTtl'>Upcoming Games for Teams You Manage</span><br/>
+			print "<br/><br/><span class='instrTtl'>Upcoming Games</span><br/>
 				<span class='instr'>You can print the game roster from here when you see the
-				<img src='images/page_white_edit.png' alt='print roster'> icon<br/>
-				The icon will appear 3 days before game date</i></span><br/>";
+				<img src='images/printer.png' alt='print roster'> icon<br/>
+				The icon will appear $days_before days before game date</i></span><br/>";
 			print "$myGames";
 		}
-		$myTeams = teamList($_SESSION['logon_uid']);
-		print "$myTeams";
+		print teamList($_SESSION['logon_uid']);
+		
+		
 
+    	print "<span class='instrTtl'>Manage Your Registration and Data</span><br/>";
+		print "<table id='basicLinks' class='rtbl' align='center'>";
+    	print "<tr><td height='50px' width='300px' align='center'><a href='basicInfo.php'>Basic Info</a></td></tr>";
+    	print "<tr><td height='50px' width='300px' align='center'><a href='regStatus.php'>Registration Status</a></td></tr>";
+    	print "<tr><td height='50px' width='300px' align='center'><a href='payBalance.php'>Payments</a></td></tr>";
+    	print "<tr><td height='50px' width='300px' align='center'><a href='playerCard.php'>Player Card</a></td></tr>";
+		print "</table>";
+
+		print "</div >"; //end myTeams
+		if ($myGames || $adm) print "<br/><a href='addTeam.php'>add a new team</a>";
+		print "</div >"; //end mainPar
+		
+    print "<div id='footer-spacer'></div>";
+		print "</div >"; //end container
+    print $footer;
 		print "</body>";
 		print "</html>";
 	}else include("login.php");
@@ -67,16 +77,22 @@
 			WHERE tm.user_uid=$uid AND s.stop_date > now()
 			ORDER BY s.start_date desc, s_name, t_name";
 		$res=mysql_query($sql);
-		while ($rec=mysql_fetch_assoc($res)) {
-			$s_name=$rec['s_name'];
-			if ($s_name <> $prev_s_name) $str.= "<br/><span style='font-weight:bold'>$s_name</span><br/>";
-			$prev_s_name = $s_name;
-			$str.="<a href='roster.php?team_id={$rec['team_id']}&season_id={$rec['season_id']}'>{$rec['t_name']} ({$rec['reg_status']})</a><br/>";
+		if (mysql_num_rows($res)) {
+		  print "<br/><br/><span class='instrTtl'>Teams You Manage</span><br/>";
+		  $str = "<table class='rtbl' align='center'>";
+		  while ($rec=mysql_fetch_assoc($res)) {
+			  $s_name=$rec['s_name'];
+			  if ($s_name <> $prev_s_name) $str.= "<tr><th>$s_name</th></tr>";
+			  $prev_s_name = $s_name;
+			  $str.="<tr><td align='center'><a href='roster.php?team_id={$rec['team_id']}&season_id={$rec['season_id']}'>{$rec['t_name']} ({$rec['reg_status']})</a></td></tr>";
+		  }
+		  $str .= "</table><br/><br/>";
 		}
 		return $str;
 	}
 
 		function gameList($uid, $fcn) {
+                        global $days_before;
 			if ($fcn == 'ref')
 				$sql="SELECT g.uid, team_h, team_v, game_loc, DATE_FORMAT(game_dt, '%Y-%m-%d') as game_dt, season_uid,
 					DATE_FORMAT(game_tm, '%H:%i') as game_tm, edit_right,
@@ -93,7 +109,7 @@
 					tmsl_game g ON ga.game_uid=g.uid
 					WHERE user_uid = $uid AND edit_right=2 AND 
 					DATEDIFF(now(), game_dt) >= 0 
-					AND (DATEDIFF(now(), game_dt) <= 14 OR game_report_submitted=0)
+					AND (DATEDIFF(now(), game_dt) <= 28)
 					ORDER BY game_dt, game_tm";
 			elseif($fcn == 'mgr')
 				$sql="SELECT g.uid, team_h, team_v, game_loc, DATE_FORMAT(game_dt, '%Y-%m-%d') as game_dt,
@@ -115,15 +131,15 @@
 				$str .= "<td>{$rec['game_tm']}</td>";
 				$str .= "<td>".getTeamName($rec['team_h'], $rec['season_uid'])."</td>";
 				$str .= "<td>".getTeamName($rec['team_v'], $rec['season_uid'])."</td>";
-				if ($fcn == 'mgr' && $rec['dif'] >= 0 && $rec['dif'] < 3) {
+				if ($fcn == 'mgr' && $rec['dif'] >= 0 && $rec['dif'] < $days_before) {
 					if (hasPermission(1, $rec['team_h'], $rec['season_uid']))
-						$str .= "<td><img src='images/page_white_edit.png' style='cursor:pointer'
+						$str .= "<td><img alt='x' src='images/printer.png' style='cursor:pointer'
 											onclick='window.open(\"roster_card.php?team_id={$rec['team_h']}&game_uid={$rec['uid']}\",
 											 \"roster_win\",
 											 \"height=1000; width=1200, location=no, scrollbars=yes, resizeable=yes, menubar=yes\")'
 											title='print game card' alt='print game card' border='0'></td>";
 					if (hasPermission(1, $rec['team_v'], $rec['season_uid']))
-						$str .= "<td><img src='images/page_white_edit.png' style='cursor:pointer'
+						$str .= "<td><img alt='print' src='images/printer.png' style='cursor:pointer'
 											onclick='window.open(\"roster_card.php?team_id={$rec['team_v']}&game_uid={$rec['uid']}\",
 											 \"roster_win\",
 											 \"height=1000; width=1200, location=no, scrollbars=yes, resizeable=yes, menubar=yes\")'

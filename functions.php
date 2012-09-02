@@ -20,6 +20,10 @@
 		return getScalar('uid', $uid, "CONCAT(fname,' ',lname)", 'tmsl_player');
 	}
 
+	function getUserEmail($uid) {
+		return getScalar('uid', $uid, "email", 'tmsl_player');
+	}
+
 	function getSelect($id, $arrOpts, $arrFirstOpts=array(0=>"--Select--"), $selectedVal="", $special="", $editable=1) {
 		$ret="<select name='$id' id='$id' $special>";
 		if (!empty($arrFirstOpts))
@@ -301,8 +305,10 @@
 	function chgLog($act, $tbl, $whr, $set="") {
 		$whr=mysql_escape_string($whr);
 		$set=mysql_escape_string($set);
+		if (!isset($_SESSION['logon_uid'])) return 0;
 		$sql = "INSERT INTO tmsl_change_log VALUES (null,".$_SESSION['logon_uid'].", '$act', '$tbl', '$whr', '$set', '".$_SERVER['REMOTE_ADDR']."', now())";
 		mysql_query($sql) or die($sql." ".mysql_error());
+		return 0;
 	}
 
 	function badQueryLog($act, $badsql) {
@@ -479,31 +485,31 @@
 	}
 
 	function getRefIDbyName($nm) {
-		$comma_pos=strpos($nm, ',');
-		$ln=substr($nm,0,$comma_pos);
-		$fn=substr($nm,$comma_pos+2,1);
-		$uname=strtolower($fn.$ln);
-		$arr=dbSelectSQL("SELECT player_uid FROM tmsl_user WHERE name LIKE '{$uname}%' AND isReferee=1");
+	  $nm_arr = explode(',', $nm);
+		$ln = trim($nm_arr[0]);
+		$fn = trim($nm_arr[1]);
+		$fullname=strtolower($fn.$ln);
+		$uname =  strtolower($fn[0].$ln);
+		//$arr=dbSelectSQL("SELECT uid FROM tmsl_player WHERE LOWER(CONCAT(fname,lname)) LIKE '{$fullname}%'");
+		$arr=dbSelectSQL("SELECT player_uid as uid FROM tmsl_user WHERE name LIKE '{$uname}%' AND isReferee=1");
 		if (empty($arr)) return 0;
 		if (count($arr) > 1) {
-			//handle this later -- there could be two referees whose usernames match. check the player table
+			//handle this later -- there could be two referees whose names match. check the player table
 			return 0;
 		}
-		return $arr[0]['player_uid'];
+		return $arr[0]['uid'];
 	}
 
-	function addRef($nm, $addLogOn=false) {
+	function addRef($nm, $addLogOn=true) {
 		//is there someone with this name in the player table?
-		$comma_pos=strpos($nm, ',');
-		$ln=substr($nm,0,$comma_pos);
-		$nnm=substr($nm, $comma_pos+2);
-		$space_pos=strpos($nnm, ' ');
-		$fn=substr($nnm,0,$space_pos);
+    $nm_arr = explode(',', $nm);
+		$ln = trim($nm_arr[0]);
+		$fn = trim($nm_arr[1]);
 		$fullname=strtolower($fn.$ln);
 		$arr=dbSelectSQL("SELECT uid FROM tmsl_player WHERE LOWER(CONCAT(fname,lname)) LIKE '{$fullname}%'");
 		$pid=$arr[0]['uid'];
-		$uid=getScalar('player_uid', $pid, 'uid', 'tmsl_user');
-		if ($uid) dbUpdate('tmsl_user', array('isReferee'=>1), array('uid'=>$uid));
+		if ($pid) $uid=getScalar('player_uid', $pid, 'uid', 'tmsl_user');
+		if ($uid) dbUpdate('tmsl_user', array('isReferee'=>1), array('uid'=>$uid), 0);
 		if (!$pid) {dbInsert('tmsl_player', array('fname'=>$fn, 'lname'=>$ln, dob=>'1990-01-01'));$pid=mysql_insert_id();}
 		if (!$uid && $addLogOn && $pid) {
 			addPlayerToUserTbl($pid, array('isReferee'=>1));
@@ -511,6 +517,34 @@
 		return $pid;
 	}
 
+	function addPlayertoDB($data) {
+    print_r($data);
+    $email = $data['email'];
+    unset($data['email']);
+    $pid = dbInsert('tmsl_player', $data);
+    if ($pid && $email) {
+      addEmail($pid, $email);
+      addPlayerToUserTbl($pid);
+      notifyPlayerAccount($pid, $email);
+    }
+    return $pid;
+	}
+
+  function addEmail($pid, $email) {
+    //check format
+    if (!filter_var($e, FILTER_VALIDATE_EMAIL)) 
+      return 0;
+    //see if it exists; email must be unique
+    $exists = getScalar('email', $email, 'uid', 'tmsl_player');
+    if ($exists)
+      return 0;
+    dbUpdate('tmsl_player', array('email'=>$email), array('uid'=>$pid));
+  }
+  
+  function notifyPlayerAccount($pid, $email) {
+    mail($email, 'test', 'hi', 'FROM:noreply@tmslregistration.com');
+  }
+  
 	function getUsernameFromName($nm, $format='') {
 		if (!$format) {
 			$comma_pos=strpos($nm, ',');
@@ -530,14 +564,25 @@
 	function addPlayerToUserTbl($uid, $vals=array()) {
 		$user_id=getScalar('player_uid', $uid, 'uid', 'tmsl_user');
 		if ($user_id) return 0;
-		$nm=getScalar('uid', $uid, 'lname', 'tmsl_player');
-		$nm.=', ';
-		$nm.=getScalar('uid', $uid, 'fname', 'tmsl_player');
-		$unm=getUsernameFromName($nm);
-		$vals['name']=$unm;
-		$vals['pwd']=sha1(strtolower($unm));
+		//$nm=getScalar('uid', $uid, 'lname', 'tmsl_player');
+		//$nm.=', ';
+		//$nm.=getScalar('uid', $uid, 'fname', 'tmsl_player');
+		//$unm=getUsernameFromName($nm);
+		//$vals['name']=$unm;
+		$vals['name']='';
+		//$vals['pwd']=sha1(strtolower($unm));
+		$pwd = genPwd($uid);
+		$vals['pwd'] = sha1($pwd);
 		$vals['player_uid']=$uid;
 		return dbInsert('tmsl_user', $vals, 1, 1);
+	}
+
+	function genPwd($uid) {
+    $x = 3*$uid-7;
+    $y = $x % 26 + 65;
+    $z = (1317*$x + 23) % 1000000;
+    $letr = chr($y);
+    return $letr.$z;
 	}
 
 	function checkPlayerExistence($FirstName, $Middle, $LastName, $DOB) {
@@ -586,4 +631,67 @@
 			return dbInsert('tmsl_team_manager', array('user_uid'=>$player_id, 'team_uid'=>$team_id, 'season_uid'=>$season_id));
 		return 0;
 	}
+        function getTmLnk ($tm, $szn) {
+            return "roster.php?season_id=$szn&team_id=$tm";
+        }
+        
+    function getSeasonDropdown ($dt, $season_id, $callback="'submit();'") {
+	    $sql=" SELECT DISTINCT s.uid, CONCAT( d.name, ' -- ', s.name ) AS nm
+		FROM tmsl_season s
+		INNER JOIN tmsl_division d ON s.division_uid = d.uid
+		WHERE s.stop_date >= '$dt' 
+		ORDER BY  s.start_date desc, d.rank";
+		$arrSeasons=buildSimpleSQLArr("uid", "nm", $sql);
+            
+           return getSelect("season_id", $arrSeasons, array(0=>"--Select a Season--"), $season_id, "onchange=$callback");	    
+    }
+
+    function getTeamDropdown ($season_id, $team_id, $callback="'submit();'") {
+      $sql = "SELECT tname, team_uid FROM tmsl_team_season ts WHERE season_uid = $season_id ORDER BY tname";
+      $arrTeams = buildSimpleSQLArr("team_uid", "tname", $sql);
+      return getSelect("team_id", $arrTeams, array(0=>"--Select a Team--"), $team_id, "onchange=$callback");
+    }
+
+    function getPlayerDropdown ($season_id, $team_id, $player_id, $callback="'submit();'") {
+      $sql = "SELECT player_uid, CONCAT(lname, ', ', fname) AS p_name FROM tmsl_player_team pt INNER JOIN tmsl_player p ON pt.player_uid = p.uid 
+         WHERE season_uid = $season_id AND team_uid=$team_id ORDER BY p_name";
+      $arrPlayers = buildSimpleSQLArr("player_uid", "p_name", $sql);
+      return getSelect("player_id", $arrPlayers, array(0=>"--Select a Player--"), $player_id, "onchange=$callback");
+    }
+
+  function getRegistrationStatus ($uid) {
+    $sql="SELECT pt.registered, tname, pt.season_uid, balance, waiver_signed, pt.team_uid FROM tmsl_player_team pt 
+      INNER JOIN tmsl_season s ON s.uid=pt.season_uid 
+      INNER JOIN tmsl_team_season ts ON s.uid=ts.season_uid AND ts.team_uid=pt.team_uid
+      WHERE player_uid=$uid and s.stop_date > now()";
+    $res=mysql_query($sql);
+    while ($rec=mysql_fetch_assoc($res))
+      $arr[] = $rec;
+    return $arr;      
+  }
+
+  function isCurrentlySuspended($uid) {
+  	  $sql="select date_format(stop_date,'%m/%d/%y') as stop_date from tmsl_suspended where player_uid=$uid and stop_date > now()";
+	  $arr=dbSelectSQL($sql);
+	  if (count($arr))
+	  return "Suspended Until " . $arr[0]['stop_date'];
+		return "Not suspended";
+	}
+
+	function updateRegStatus($uid, $team, $season) {
+    $susp_status = isCurrentlySuspended($uid);
+    if ($susp_status != "Not suspended") return false;
+    $sql = "SELECT balance, registered, waiver_signed FROM tmsl_player_team 
+      WHERE player_uid = $uid AND team_uid = $team AND season_uid = $season";
+    $res = mysql_query($sql);
+    $rec = mysql_fetch_assoc($res);
+    foreach ($rec as $k=>$v) $$k=$v;
+    if ($registered) {
+      if ($waiver_signed and !$balance) $uarr = array('registered'=>2);
+      else $uarr = array('registered'=>1);
+      dbUpdate('tmsl_player_team', $uarr, array('player_uid' => $uid, 'team_uid' => $team, 'season_uid' => $season));
+    }
+    return true;
+	}
+		 	
 ?>

@@ -56,6 +56,7 @@
 	print "</head>";
 	if ($season_id) $onld="onload='showTeams($season_id);'";
 	print "<body $onld>";
+        print "<div id=container>"; 
 	echo "<div id='testdiv1' style='position:absolute;visibility:hidden;background-color:white;layer-background-color:white;'></div>";
 	print $banner;
 	print $navBar;
@@ -64,6 +65,7 @@
 	//is there a date? if so, show games for that date
 	if (!$dt) $dt=date('Y-m-d');
 	if (!$numDays) $numDays=7;
+        if ($numDays % 7) {$numDays += (7 - ($numDays % 7)); print "numD=$numDays";}
 	if (!$srch) $srch = 1;
 	//verify that the date is good, and change its form
 	$dt=strtotime($dt);
@@ -104,7 +106,7 @@
 		if ($adm) print "<tr><td>Center Referee:</td><td>$refSelect</td>";
 		print "<tr><td>Weeks to show:</td>";
 		print "<td><select name='numDays'>";
-		for ($i=1;$i<17;$i++) {
+		for ($i=1;$i<53;$i++) {
 			$j=7*$i;
 			if ($j==$numDays) $sel="selected='selected'";
 			else $sel="";
@@ -128,7 +130,7 @@
 		if ($ref_id) $refClause=" AND user_uid=$ref_id ";
 
 		$sql="SELECT g.uid FROM tmsl_game g LEFT JOIN tmsl_game_assign ga ON g.uid=ga.game_uid AND edit_right=2 WHERE game_dt >= '$dt' AND game_dt < DATE_ADD('$dt', INTERVAL $numDays DAY)
-					$sznClause $locClause $tmClause $refClause ORDER BY game_dt, season_uid, game_tm";
+					$sznClause $locClause $tmClause $refClause ORDER BY game_dt, season_uid, game_tm";					
 		$gms=dbSelectSQL($sql);
 		//if ($adm && $season_id) print "<a href='index.php?dt=$dt&season_id=$season_id&numWeeks=$numWeeks&add=1'>New Game</a>";
 		$arrDt=dbSelectSQL("SELECT DATE_FORMAT('$dt', '%M %e') as sd, DATE_FORMAT(DATE_ADD('$dt', INTERVAL $numDays DAY), '%M %e') as ed");
@@ -157,14 +159,14 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 					DATE_FORMAT(game_tm, '%H:%i') as game_tm,
 					DATEDIFF(game_dt, now()) as dif,
 					team_h, team_v, season_uid, game_loc, team_h_pts, team_v_pts, team_h_score, team_v_score
-					FROM tmsl_game WHERE uid=$uid";
+					FROM tmsl_game WHERE uid=$uid";					
 				$arr=dbSelectSQL($sql);
 				$rec2=$arr[0];
 
 				$str = "";
 
-				if ($rec2['game_dt'] <> $last_dt || $rec2['season_uid'] <> $last_szn)
-					$str .= "<tr><td colspan=10 style='border-bottom: 3px solid black;'>&nbsp</td></tr>";
+				if (!$season_id && ($rec2['game_dt'] <> $last_dt || $rec2['season_uid'] <> $last_szn))
+					$str .= "<tr><td colspan=10 style='border-bottom: 3px solid black;'>".getSeasonName($rec2['season_uid'])."</td></tr>";
 
 				$str .= "<tr>";
 
@@ -194,9 +196,9 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 
 				$str .= "<td>".showTimeDropDown("game_tm_$uid", 800, 2200, 15, $rec2['game_tm'], $edit, array(0=>"--Select--"), "onchange='upd_fld()'")."</td>";
 				//$str .= "<td>".getTeamName($rec2['team_h'], $rec2['season_uid']);
-				$str .= "<td>".getSelect("team_h_$uid", $arrTms, $arrFirstOpts=array(0=>"--Select--"), $rec2['team_h'], "onchange='upd_fld()'", $edit);
-				if ($adm && $rec2['dif']>=0 && $rec2['dif']<3)
-					$str .= "<img src='images/page_white_edit.png'
+				$str .= "<td><a href='".getTmLnk($rec2['team_h'], $rec2['season_uid'])."'>".getSelect("team_h_$uid", $arrTms, $arrFirstOpts=array(0=>"--Select--"), $rec2['team_h'], "onchange='upd_fld()'", $edit)."</a>";
+				if ($adm && $rec2['dif']>=0 && $rec2['dif']<$days_before)
+					$str .= "<img src='images/printer.png'
 										onclick='window.open(\"roster_card.php?team_id={$rec2['team_h']}&game_uid={$uid}\",
 										 \"roster_win\",
 										 \"height=1000; width=1200, location=no, scrollbars=yes, resizeable=yes, menubar=yes\")'
@@ -205,9 +207,9 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 				if ($rec2['team_h_pts']>=0) {
 					$str .= "<td>{$rec2['team_h_score']}</td><td>{$rec2['team_v_score']}</td>";
 				} else $str .= "<td>&nbsp;-&nbsp; </td><td> &nbsp;-&nbsp; </td>";
-				$str .= "<td>".getSelect("team_v_$uid", $arrTms, $arrFirstOpts=array(0=>"--Select--"), $rec2['team_v'], "onchange='upd_fld()'", $edit);
-				if ($adm && $rec2['dif']>=0 && $rec2['dif']<3)
-					$str .= "<img src='images/page_white_edit.png'
+				$str .= "<td><a href='".getTmLnk($rec2['team_v'], $rec2['season_uid'])."'>".getSelect("team_v_$uid", $arrTms, $arrFirstOpts=array(0=>"--Select--"), $rec2['team_v'], "onchange='upd_fld()'", $edit)."</a>";
+				if ($adm && $rec2['dif']>=0 && $rec2['dif']<$days_before)
+					$str .= "<img src='images/printer.png'
 										onclick='window.open(\"roster_card.php?team_id={$rec2['team_v']}&season_id={$rec2['season_uid']}&sbm=1&game_date={$rec2['game_dt']}\",
 										 \"roster_win\",
 										 \"height=1000; width=1200, location=no, scrollbars=yes, resizeable=yes, menubar=yes\")'
@@ -226,7 +228,10 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 			}
 			if ($adm) {
 				if ($edit) print "<tr><td colspan='10'><input type='submit' name='sbm' id='sbm' disabled='true' style='color:#ccc; background-color:#ddd' title='no changes to save' value='save changes'>";
-				else print "<tr><td colspan='10'><input type='submit' name='edit' value='edit'><input type='button' onclick='window.location=\"upl.php\"' value='upload'>";
+				else {
+				  print "<tr><td colspan='10'><input type='submit' name='edit' value='edit'><input type='button' onclick='window.location=\"upl.php\"' value='upload CSV'>";
+				  print "<input type='button' onclick='window.location=\"assignr_pull.php\"' value='sync with assignr' title='Pull data from assignr.com for the next week'>";
+				}  
 				if ($season_id) print "<input type='submit' name='add' value='New Game'>";
 				print "</td></tr>";
 			}
@@ -234,11 +239,17 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 			print "</form>";
 		} else {
 				print "No Games to Show";
-				if ($adm) print "<br/><input type='button' onclick='window.location=\"upl.php\"' value='upload'>";
-				if ($adm && $season_id) print "<input type='submit' name='add' value='New Game'>";
+				if ($adm) {
+				  print "<br/><input type='button' onclick='window.location=\"assignr_pull.php\"' value='sync with assignr' title='Pull data from assignr.com for the next week'>";
+				  print "<input type='button' onclick='window.location=\"upl.php\"' value='upload CSV'>";
+				  if ($season_id) print "<input type='submit' name='add' value='New Game'>";
+				}
 		}
 	} else print "Select the criteria for the games you wish to see and press ok.";
 	print "</div>";
+print "<div id='footer-spacer'></div>";
+print "</div >"; //end container
+print $footer;
 	print "</body>";
 	print "</html>";
 ?>
