@@ -35,32 +35,10 @@
 				print "<a href='$em_str'>$em_str</a>";
 			}
 			if ($addUser) {
-				/*If username is not filled in, use first initial plus last name*/
-				$arr=dbSelect('tmsl_player', array('fname', 'lname'), array('uid'=>$player_id));
-				$fname=$arr[0]['fname'];
-				$lname=$arr[0]['lname'];
-				if (!$username) $username=strtolower(substr($fname, 0, 1).$lname);
-				/*See if the username exists*/
-				$uid=getScalar('name', $username, 'player_uid', 'tmsl_user');
-				while ($uid) {
-					$uname=$username.++$j;
-					$uid=getScalar('name', $uname, 'player_uid', 'tmsl_user');
-				}
-				if ($j) $username.=$j;
-				if (!$uid) {
-					$player_arr=array('fname'=>$fname, 'lname'=>$lname,
-						'addr'=>$addr,'city'=>$city,'state'=>$state,'zip'=>$zip,'email'=>$email,'phone'=>$phone);
-					$user_arr=array('name'=>$username, 'pwd'=>sha1(strtolower($username)));
-					if (!$player_id) {
-						dbInsert('tmsl_player', $player_arr, true, false);
-						$player_id=mysql_insert_id();
-					}
-					$user_arr['player_uid']=$player_id;
-					dbInsert('tmsl_user', $user_arr, true, false);
-					$msg =  "User $username added.  Password set to $username -- please inform user to change it.";
-				}
+				$e = getUserEmail($player_id); 
+				addPlayerToUserTbl($uid, array('name'=>$e));
+				$msg = "user $e added";
 			}
-
 			if ($msg) print "<span id='updateMsg'>$msg</span><br/>";
 			if ($deleteUser) {
 				//if (dbUpdate('tmsl_user', array('active'=>0), array('uid'=>$uid), true, true))
@@ -77,26 +55,20 @@
 				$whrLNArr=array();
 				print "<form>";
 				print "<table align='center'>";
-				print "<tr><th>Show:</th>";
-				print "<td><input type='checkbox' name='show[]' value='1' '".((in_array(1,$show))?"checked=true":"")."'>admins</td>";
-				print "<td><input type='checkbox' name='show[]' value='2' '".((in_array(2,$show))?"checked=true":"")."'>board members</td>";
-				print "<td><input type='checkbox' name='show[]' value='4' '".((in_array(4,$show))?"checked=true":"")."'>referees</td>";
-				print "<td><input type='checkbox' name='show[]' value='8' '".((in_array(8,$show))?"checked=true":"")."'>team captains</td>";
-				print "</tr><tr>";
-				print "<tr><th>Last name between:</th>";
-				print "<td><input type='input' name='lns' value='$lns'></td>";
-				print "<th>and:</th>";
-				print "<td><input type='input' name='lne' value='$lne'></td>";
-				print "</tr><tr>";
-				print "<td colspan='5' align='center'><input type='submit' name='sbm' value='ok'></td></tr>";
+				print "<tr><th>Last name starts with:</th>";
+				print "<td colspan='3'>";
+				for ($i=65; $i <=90; $i++) { 
+					print "<a href='{$_SERVER['PHP_SELF']}?flln=".chr($i)."'>".chr($i)."</a> ";
+				}
+				print "</td>";
+				print "</tr>";
 				print "</table>";
 				print "</form>";
 				if (in_array(1,$show)) $whrArr[] = "u.mask=255";
 				if (in_array(2,$show)) $whrArr[] = "p.boardMember=1";
 				if (in_array(4,$show)) $whrArr[] = "u.isReferee=1";
 				if (in_array(8,$show)) $whrArr[] = "1";
-				if ($lns) $whrLNArr[] = "p.lname > '$lns'";
-				if ($lne) $whrLNArr[] = "p.lname < '$lne'";
+				if ($flln) $whrLNArr[] = "p.lname LIKE '{$flln}%'";
 				$whr = implode(' OR ', $whrArr);
 				$whrLN = implode(' AND ', $whrLNArr);
 				if ($whr || $whrLN) {
@@ -143,7 +115,6 @@
 					print "</table>";
 					print "<input type='image' src='images/email.png' name='mail' title='Mail Selected'>";
 					print "</form>";
-					print "<br/><a href='player.php?addUser=1'>Add User</a><br/>";
 				}
 			}else{
 				//one user selected
@@ -201,6 +172,7 @@
 				print "</br/><a href='admin.php?deleteUser=1&uid=$uid'>Delete</a><br/>";
 				print "</br/><a href='admin.php'>Back to Full List of Users</a><br/>";
 			}
+			print "<br/><a href='player.php?addUser=1'>Add User</a><br/>";
 			print "</div>";
 			print "</body>";
 			print "</html>";

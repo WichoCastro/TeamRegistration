@@ -117,7 +117,7 @@
 		$sql = "SELECT s.name, s.uid, DATE_FORMAT(start_date,'%m/%d/%Y') as start_d, DATE_FORMAT(stop_date,'%m/%d/%Y') as stop_d, l.name as league_name, l.uid as division_uid,
 			case when stop_date >= now() then 0 else 1 end as closed
 			FROM tmsl_season s INNER JOIN tmsl_division l ON s.division_uid=l.uid
-			ORDER BY l.name, start_date DESC, s.name";
+			ORDER BY start_date DESC, l.rank, s.name";
 		$res=mysql_query($sql);
 		print "<form method='post' action='manageSeasons.php'>";
 		//print "<input type='hidden' name='change_active' value='1'>";
@@ -125,7 +125,7 @@
 		print "<table align='center' cellpadding='7' cellspacing='0'>";
 		print "<tr><th>&nbsp;</th><th>Season</th><th>Division</th><th>From</th><th>Until</th></tr>";
 		while ($rec=mysql_fetch_array($res)) {
-			if ($prev_div <> $rec['division_uid']) print "<tr><td>&nbsp</td></tr>";
+			if ($prev_sd <> $rec['start_d']) print "<tr><td>&nbsp</td></tr>";
 			//if ($rec['active']) {$col="bgcolor='yellow'";$ck="checked='checked'";} else {$col=""; $ck="";}
 			//$activate="<input type='radio' name='make_active_".$rec['division_uid']."' value='".$rec['uid']."' onclick='submit();' $ck>";
 			//if ($rec['closed']) $activate="&nbsp;";
@@ -139,7 +139,7 @@
 			print "<td>".$rec['start_d']."</td>";
 			print "<td>".$rec['stop_d']."</td>";
 			print "<tr>";
-			$prev_div = $rec['division_uid'];
+			$prev_sd = $rec['start_d'];
 		}
 		print "</table>";
 		print "<input type='submit' value='New Season' name='addSeason'>";

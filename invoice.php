@@ -58,7 +58,7 @@
 			print "</table>";
 		}
 		print "<h4>Amount owed: $".$owed.".</h4>";
-		print "<h5>Your team will be able to play when the amount owed is submitted to TMSL.<br/>For initial registration, payment must be received as ONE check or money order.<br/>Checks may be brought in or mailed to:<br/>TMSL OFFICE<br/>4651 N. First Ave., Suite 204<br/>Tucson, AZ 85718<br/>A bounced check fee of $25 will be assessed for checks that don't clear.  </h5>";
+		print "<h5>Your team will be able to play when the amount owed is submitted to TMSL.<br/>Unless otherwise specified, payment must be received as ONE check or money order.<br/>Checks may be brought in or mailed to:<br/>TMSL OFFICE<br/>4651 N. First Ave., Suite 204<br/>Tucson, AZ 85718<br/>A bounced check fee of $25 will be assessed for checks that don't clear.  </h5>";
 		print "<input type='button' value='Back to Roster' onClick='window.location=\"roster.php?team_id=$team_id&season_id=$season_id\"' class='pointer'>";
 		print "</div>";
 		print "</body>";

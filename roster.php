@@ -65,7 +65,7 @@
     var col = $F(inpt_id);
     var params = 'tbl=tmsl_team_season&fld=colors&team_id=<?=$team_id?>&season_id=<?=$season_id?>&val='+col;
     var dv='sp_colrz';
-    var myAjax=new Ajax.Updater(dv, url, {method: 'post', parameters: params });
+    var myAjax=new Ajax.Request(url, {method: 'post', parameters: params });
   }
 </script>
 <?  
@@ -118,8 +118,8 @@
         
         print "</div><br/>"; //end teamInfoBox
 
-        $min_players=$season->minPlayersTeam;
-        $max_players=$season->maxPlayersTeam;
+        $min_players=$season->minPlayers;
+        $max_players=$season->maxPlayers;
         $last_day_team=$season->lastDateTeam;
         $last_day_player = $season->lastDatePlayer;
         $registered = $team->registered;
@@ -146,12 +146,8 @@
               print "The last day to register a team is $last_day_team.<br/>";
               if ($numOnRoster >= $min_players) {
                 if ($numOnRoster <= $max_players) {
-                  if ($team->colors == 'not specified')
-                    print "<br><span style='font-size:16pt'><a href='#' onclick=\"javascript:window.open('editTmDetails.php?team_id=$team_id', 'etd', 'height=400; width=800');\">Please click here to list team colors before registering.</a></span><br><br>";
-                  else
-                    print "<input type='button' value='REGISTER' onClick='window.location=\"registerTeam.php?team_id=$team_id&season_id=$season_id\"' class='majAction'><br/>";
+                  print "<input type='button' value='REGISTER' onClick='window.location=\"registerTeam.php?team_id=$team_id&season_id=$season_id\"' class='majAction'><br/>";
                   print "$numOnRoster on the roster<br/>";
-
                 }else{
                   print "You have $numOnRoster on the roster -- you can't register more than $max_players.<br/>";
                 }
@@ -228,6 +224,22 @@
                       <img alt='Waiver Not Signed' src='images/waiver_unsigned.png' title='Waiver Not Signed; Click to Mark As Signed.' border='0'>
                       </span>
                     </td>";
+                if ($player->balance)
+                  print "
+                    <td>
+                      <span id='balance_{$player->id}' 
+                       onclick='window.location=\"acceptPlayerRegistration.php?uid={$player->id}&team_id=$team_id&season_id=$season_id\";'>
+                      <img alt='Waiver Signed' src='images/paid_no.png' title='Click to mark as paid' border='0'>
+                      </span>
+                    </td>";
+                else
+                  print "
+                    <td>
+                      <span id='balance_{$player->id}' 
+                       onclick='window.location=\"acceptPlayerRegistration.php?uid={$player->id}&team_id=$team_id&season_id=$season_id\";'>
+                      <img alt='Waiver Signed' src='images/paid_yes.png' title='Click to mark as NOT paid' border='0'>
+                      </span>
+                    </td>";    
                 if ($player->registered != 2)
                   print "
                     <td>
@@ -310,6 +322,14 @@
         }else{
           print "There are no players on this team.<br/>";
         } //end player table
+        
+        //legend
+        print "<table align='center' class='rtbl'><tr><th colspan='3'>Legend</th></tr>
+          <tr><td>Registered</td><td>Registeration Pending</td><td>Suspended</td></tr>
+          <tr><td><div style='background:#eef; border: 1px solid black;'>&nbsp;</div></td>
+          <td><div style='background:#ccf; border: 1px solid black;'>&nbsp;</div></td>
+              <td><div style='background:#ff4; border: 1px solid black;'>&nbsp;</div></td></tr>
+          </table>";
 
         if ($mgr) {
           print "<table align='center'><tr>";

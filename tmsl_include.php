@@ -49,5 +49,5 @@
 						</tr>
 					</table>
 				</div>";
-	$days_before=2;
+	$days_before=3;
 ?>

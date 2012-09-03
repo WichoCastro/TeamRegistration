@@ -65,7 +65,6 @@
 			$res=mysql_query($sql);
 			$noRecs=true;
 			if ($addUser) print "Click the green checkmark to grant the player logon privileges:";
-			elseif ($addUser) print "";
 			elseif ($team_id) print "Click the green checkmark to add the player to the team:";
 			print "<table border='1' style='border-collapse:collapse' cellspacing='0' cellpadding='5' align='center'>";
 			while ($rec=mysql_fetch_assoc($res)) {

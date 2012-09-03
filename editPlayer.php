@@ -187,7 +187,7 @@
 				}
 			}
             $addTmPrivCk = $usrAddTmPriv ? 'checked' : '';
-            print "<tr><td>Add Team Privilige</td><td><input type='checkbox' id='addTmPriv' name='addTmPrivCk' $addTmPrivCk></td></tr>";
+            if ($adm) print "<tr><td>Add Team Privilige</td><td><input type='checkbox' id='addTmPriv' name='addTmPrivCk' $addTmPrivCk></td></tr>";
 			print "</table>";
 			if ($edit) $action="upd"; else $action="ins";
 		}

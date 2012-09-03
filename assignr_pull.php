@@ -8,7 +8,7 @@
   //time now is
   $tm = time();
   //one week would be
-  $week_from_now = $tm + 7*24*3600;
+  $week_from_now = $tm + 14*24*3600;
   //date now is 
   $dt = date('M j, Y');
   //date in one week

@@ -21,5 +21,5 @@ function payAtOffice(u, t, s) {
   var params = 'tbl=tmsl_player_team&uid=' + u + '&team_id=' + t + '&season_id=' + s + '&fld=pay_pending&val=1';
   var myAjax = new Ajax.Request(url, {method: 'post', parameters: params});
   $('btnPayPromise').style.background='#8f8';
-  alert('The office is located near First and River, at 4651 N. First Ave., Suite 204. Please check with administrators to find out when the office is open.');
+  alert('The office is located near First and River, at 4651 N. First Ave., Suite 204. Materials can be dropped off any time during regular business hours through the mail slot.  League office hours are Wednesdays  5-7.');
 }

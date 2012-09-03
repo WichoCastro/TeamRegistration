@@ -577,14 +577,13 @@
 	function addPlayerToUserTbl($uid, $vals=array()) {
 		$user_id=getScalar('player_uid', $uid, 'uid', 'tmsl_user');
 		if ($user_id) return 0;
-		//$nm=getScalar('uid', $uid, 'lname', 'tmsl_player');
-		//$nm.=', ';
-		//$nm.=getScalar('uid', $uid, 'fname', 'tmsl_player');
-		//$unm=getUsernameFromName($nm);
-		//$vals['name']=$unm;
-		//$vals['name']='';
-		//$vals['pwd']=sha1(strtolower($unm));
 		$pwd = genPwd($uid);
+		$to = getUserEmail($uid);
+		$subj = 'TMSL Account Info';
+		$body = "You can now logon to the TMSL Registration Site (http://tmslregistration.com). ";
+		$body .= "Your username is $to and your password is $pwd. "; 
+		$body .= "Log on to change your password, complete registration, and so forth.";
+		mail($to, $subj, $body, 'FROM:noreply@tmslregistration.com');
 		$vals['pwd'] = sha1($pwd);
 		$vals['player_uid']=$uid;
 		return dbInsert('tmsl_user', $vals, 1, 1);

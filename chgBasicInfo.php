@@ -36,7 +36,7 @@
   print "</th>";
   print "<td>";
   $email = getUserEmail($uid);
-  print "<input type='text' value='$email' id='e_$uid' onchange='upd_email($uid)' ?>";
+  print "<input type='text' size=60 value='$email' id='e_$uid' onchange='upd_email($uid)' ?>";
   print "</td>";
   print "</tr>";
 
@@ -48,7 +48,7 @@
     print "</th>";
     print "<td>";
     $data = getScalar('uid', $uid, "$a", 'tmsl_player');
-    print "<input type='text' value='$data' id='$a' onchange='upd_fld(\"$a\")' ?>";
+    print "<input type='text' size=60 value='$data' id='$a' onchange='upd_fld(\"$a\")' ?>";
     print "</td>";
     print "</tr>";  
   }
