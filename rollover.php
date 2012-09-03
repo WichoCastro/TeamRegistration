@@ -42,7 +42,7 @@
 				if ($confirmed) {
 					dbInsert('tmsl_team_season', $arr, 1);
 					if (!empty($p_id)) foreach($p_id as $pid) {
-						$msg=verifyAddPlayerToTeam($pid, $tid, $new_season_id, true);
+						$msg=verifyAddPlayerToTeam($pid, $tid, $new_season_id);
 						if ($msg=="1" || ($_SESSION['mask'] == 255)) {
 							$jrsy=0;
 							$sql="select jersey_no from tmsl_player_team where team_uid=$tid and season_uid=$season_id and player_uid=$pid";
@@ -69,14 +69,14 @@
 					foreach($playerArr as $p) {
 						$pid=$p['player_uid'];
 						if ($p['registered'] > 1) $ck='checked=true'; else $ck='';
-						$msg=verifyAddPlayerToTeam($pid, $tid, $new_season_id, true);
+						$msg=verifyAddPlayerToTeam($pid, $tid, $new_season_id);
 						if ($msg=="1") {
 							$nm=getUserName($pid);
 							$playerTbl.="<tr><td><input type='checkbox' $ck name='p_id[]' id='p_id[]' value='$pid'>$nm</td></tr>";
 						} else {
 							$nm=getUserName($pid);
 							if ($_SESSION['mask'] == 255) {
-								$playerTbl.="<tr><td><input type='checkbox' name='p_id[]' id='p_id[]' value='$pid'><span title='$msg'>$nm</span></td></tr>";
+								$playerTbl.="<tr><td><input type='checkbox' name='p_id[]' id='p_id[]' value='$pid'><span>$nm</span><span class='status'>$msg</span></td></tr>";
 							} else
 								$playerTbl.="<tr><td><input type='checkbox' disabled='disabled' name='p_id[]' id='p_id[]' value='$pid'><span title='$msg'>$nm</span></td></tr>";
 						}
