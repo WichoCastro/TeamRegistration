@@ -94,7 +94,7 @@ input:disabled, textarea:disabled {background-color: #aaa; color:#888}
 }
 #mainPar {
   font-size: 10pt;
-  margin: 30;
+  margin: 30px;
   text-align:center;
 }
 #ttlBar {
@@ -275,4 +275,11 @@ input:disabled, textarea:disabled {background-color: #aaa; color:#888}
   margin-top:20px;
   margin-bottom:20px;
   font-weight:bold;
+}
+input:disabled {
+  color:#222;
+  background-color:#bbb;
+}
+#testdiv1 {
+	position:absolute;visibility:hidden;background-color:white;layer-background-color:white;
 }

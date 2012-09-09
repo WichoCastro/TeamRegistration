@@ -1,13 +1,7 @@
 <?
 	include_once("session.php");
 	if ($_SESSION['logged_in']) {
-		print "<html>";
-		print "<head>";
-		print "<link href='tmsl.css' rel='stylesheet' type='text/css'>";
-		print "</head>";
-		print "<body>";
-		print "<div id='banner'>TMSL</div>";
-		print $navBar;
+		print $beginning;
 		$str = "<table align='center'>";
 		$str .= "<tr><td><a href='reportRegisteredList.php'>Registered By Date</a></td></tr>";
 		$str .= "<tr><td><a href='reportCards.php'>Red & Yellow Cards</a></td></tr>";

@@ -3,22 +3,15 @@
   if ($_SESSION['logged_in']) {
   	$uid = $player_id ? $player_id : $_SESSION['logon_uid'];
   	if (!hasPermissionEditPlayer($_SESSION['mask'], $uid)) header('Location:index.php');
-  print "<html>";
-  print "<head>";
-  print "<link href='tmsl.css' rel='stylesheet' type='text/css'>";
-  print "<script language='JavaScript' type='text/javascript' src='prototype.js'></script>";
-  print "</head>";
-  print "<body>";
-  print "<div id=container>"; 
-  print $banner;
-  print $navBar;
-  print "<div id='ttlBar'>Registration Status</div>";
-  print "<div id='mainPar'>";
+  
+    print $beginning;
+    print "<div id='ttlBar'>Registration Status</div>";
+    print "<div id='mainPar'>";
 
     $arr = getRegistrationStatus($uid);
     $birthdate_val = getScalar('uid', $uid, 'DOB_validated', 'tmsl_player');
 
-  print "<table class='rtbl' align='center'>";
+    print "<table class='rtbl' align='center'>";
 
   if (count($arr)) foreach($arr as $a) {
 

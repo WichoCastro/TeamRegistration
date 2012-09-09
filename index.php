@@ -1,14 +1,7 @@
 <?
 	include_once("session.php");
 	if ($_SESSION['logged_in']) {
-		print "<html>";
-		print "<head>";
-		print "<link href='tmsl.css' rel='stylesheet' type='text/css'>";
-		print "</head>";
-		print "<body>";
-                print "<div id=container>";
-		print $banner;
-		print $navBar;
+		print $beginning;
 		print "<div id='ttlBar'>Home</div>";
 		$str = "Welcome to the TMSL Registration Website. Here we hope to provide everything you need to register online.<br/><br/>";
 		print "<div id='mainPar'>$str";

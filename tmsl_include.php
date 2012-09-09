@@ -6,7 +6,6 @@
 	  2 = edit all teams
 	  4 = ?
 	-----------------------*/
-
 	$arrPlayerFields=array("p.uid"=>"ID", "CONCAT(p.lname, ', ', p.fname)"=>"Name", "case p.email when '' then 'N/A' else CONCAT('<a href=mailto:',p.email,'>',p.email,'</a>') end"=>"Email", "jersey_no"=>"Jersey", "pic_on_file"=>"Pic", "DOB_validated"=>"dob_val");
 	//$arrPlayerFields["case when now() between ifnull(sus.start_date, '0000-00-00') and ifnull(sus.stop_date, '0000-00-00') then 1 else 0 end"]="Suspended";
 	$arrPlayerFields["pt.registered"]="Registered";
@@ -26,7 +25,7 @@
 	$mandatoryFields=array("FirstName","LastName","DOB");
 	$banner = "<div id='banner'>TMSL</div>";
 	$footer = "<div id='footer'>site by <a href='http://3r3w.org'>3r3w</a></div>";
-
+	
 	$navBar = 	"<div id='navBar'>
 					<table align='center'>
 						<tr>
@@ -49,5 +48,22 @@
 						</tr>
 					</table>
 				</div>";
+				
+	$beginning = "<!DOCTYPE HTML>
+				<html>
+				<head>
+				<meta charset='UTF-8'>
+				<script language='JavaScript' type='text/javascript' src='prototype.js'></script>
+				<script language='JavaScript' type='text/javascript' src='tmsl.js'></script>
+				<script language='JavaScript' type='text/javascript' src='calendar.js'></script>
+				<script>var cal = new CalendarPopup('testdiv1')</script>
+				<link href='tmsl.css' rel='stylesheet' type='text/css'>
+				<title>TMSL Registration</title>
+				</head>
+				<body>
+				<div id='testdiv1'></div>
+				<div id='container'>
+				$banner
+				$navBar";
 	$days_before=3;
 ?>

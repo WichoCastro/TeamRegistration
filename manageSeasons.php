@@ -2,11 +2,6 @@
 	include_once("session.php");
 	if ($_SESSION['logged_in']) {
 		if ($addSeasonSubmit) {
-			//if (!$league_id && $new_league_name) {
-			//	$sql="INSERT INTO tmsl_division (name) VALUES ('$new_league_name')";
-			//	mysql_query($sql) or die("Error: Does a league by that name already exist?");
-			//	$league_id = mysql_insert_id();
-			//}
 			if (!strtotime($start_date)) $errMsg="Please enter a valid start date ('$start_date' is not a valid date)";
 			if (!strtotime($stop_date)) $errMsg="Please enter a valid start date ('$stop_date' is not a valid date)";
 			if (!strtotime($last_day_team)) $errMsg="Please enter a valid date for 'Last Day to Register Team' ('$last_day_team' is not a valid date)";
@@ -99,18 +94,8 @@
 		if (!$stop_date) $stop_date=date('m/d/Y', mktime(0,0,0,date('m'),date('d')+7,date('Y')));
 		$start_date_sql=date('Y-m-d', strtotime($start_date));
 		$stop_date_sql=date('Y-m-d', strtotime($stop_date));
-		print "<html>";
-		print "<head>";
-		print "<link href='tmsl.css' rel='stylesheet' type='text/css'>";
-		print "<script language='JavaScript' type='text/javascript' src='calendar.js'></script>";
-		print "<script>var cal = new CalendarPopup('testdiv1');</script>";
-		print "</head>";
-		print "<body>";
-		echo "<DIV ID='testdiv1' STYLE='position:absolute;visibility:hidden;background-color:white;layer-background-color:white;'></DIV>";
-		print $banner;
-		print $navBar;
+		print $beginning;
 		print "<div id='ttlBar'>Season Management</div>";
-
 		print "<div id='mainPar'>";
 		if ($addSeason) print $addSeasonForm;
 		//print "Select an 'active season' for each division.";
@@ -146,6 +131,7 @@
 		print "</form>";
 		print "<input type='button' value='Add Division' onclick='window.location=\"addDivision.php\"'>";
 		print "</div>";
+		print $footer;
 		print "</body>";
 		print "</html>";
 	}else include("login.php");

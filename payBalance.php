@@ -3,16 +3,7 @@
   if ($_SESSION['logged_in']) {
   	$uid = $player_id ? $player_id : $_SESSION['logon_uid'];
   	if (!hasPermissionEditPlayer($_SESSION['mask'], $uid)) header('Location:index.php');
-  print "<html>";
-  print "<head>";
-  print "<link href='tmsl.css' rel='stylesheet' type='text/css'>";
-  print "<script language='JavaScript' type='text/javascript' src='prototype.js'></script>";
-  print "<script language='JavaScript' type='text/javascript' src='tmsl.js'></script>";
-  print "</head>";
-  print "<body>";
-  print "<div id=container>"; 
-  print $banner;
-  print $navBar;
+  print $beginning;
   print "<div id='ttlBar'>".getUserName($uid)." -- Pay</div>";
   print "<div id='mainPar'>";
 

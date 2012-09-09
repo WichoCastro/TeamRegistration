@@ -588,13 +588,22 @@
 		$vals['player_uid']=$uid;
 		return dbInsert('tmsl_user', $vals, 1, 1);
 	}
+	
+	function sendNewUserEmail($e, $pwd) {
+		$to = $e;
+		$subj = 'TMSL Account Info';
+		$body = "You can now log on to the TMSL Registration Site (http://tmslregistration.com). ";
+		$body .= "Your username is $to and your password is $pwd. "; 
+		$body .= "Log on to change your password, complete registration, and so forth.";
+		mail($to, $subj, $body, 'FROM:noreply@tmslregistration.com');
+	}
 
 	function genPwd($uid) {
-    $x = 3*$uid-7;
-    $y = $x % 26 + 65;
-    $z = (1317*$x + 23) % 1000000;
-    $letr = chr($y);
-    return $letr.$z;
+    	$x = 3*$uid-7;
+    	$y = $x % 26 + 65;
+    	$z = (1317*$x + 23) % 1000000;
+    	$letr = chr($y);
+    	return $letr.$z;
 	}
 
 	function checkPlayerExistence($FirstName, $Middle, $LastName, $DOB) {
@@ -645,9 +654,10 @@
 			return dbInsert('tmsl_team_manager', array('user_uid'=>$player_id, 'team_uid'=>$team_id, 'season_uid'=>$season_id));
 		return 0;
 	}
-        function getTmLnk ($tm, $szn) {
-            return "roster.php?season_id=$szn&team_id=$tm";
-        }
+        
+    function getTmLnk ($tm, $szn) {
+        return "roster.php?season_id=$szn&team_id=$tm";
+    }
         
     function getSeasonDropdown ($dt, $season_id, $callback="'submit();'") {
       if (!$dt) { //pass in a zero date to do the calculations here 

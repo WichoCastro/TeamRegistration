@@ -1,7 +1,15 @@
 <?
 	include_once("session.php");
-	if ($_SESSION['logged_in']) {
-		if ($_SESSION['mask']==255) {
+	if ($_SESSION['logged_in'] && $_SESSION['mask'] & 128) {
+		if ($team_id && $season_id) {
+			$p = new Person($uid, $team_id, $season_id);
+			$team = new Team($team_id, $season_id);
+			$season = new Season($season_id);
+		} elseif ($uid)
+			$player = new Person($uid);
+		else $uid =0;
+		
+		
 			if ($uid && $team_id) {
 				if ($addTeam) {
 					$addTeam=0;
@@ -15,13 +23,7 @@
 			if ($is_ref>-1) {dbUpdate('tmsl_user', array('isReferee'=>$is_ref), array('player_uid'=>$uid), true);}
 			if ($bm>-1) dbUpdate('tmsl_player', array('boardMember'=>$bm), array('uid'=>$uid), true);
 
-			print "<html>";
-			print "<head>";
-			print "<link href='tmsl.css' rel='stylesheet' type='text/css'>";
-			print "</head>";
-			print "<body>";
-			print $banner;
-			print $navBar;
+			print $beginning;
 			print "<div id='ttlBar'>Admin</div>";
 			print "<div id='mainPar'>";
 
@@ -176,7 +178,7 @@
 			print "</div>";
 			print "</body>";
 			print "</html>";
-		}else header("Location:index.php");
+		
 	}else include("login.php");
 ?>
 <script>

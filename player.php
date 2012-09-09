@@ -2,13 +2,7 @@
 	include_once("session.php");
 	if ($_SESSION['logged_in']) {
 		if ($clearTeam) $_SESSION['team_uid']=0;
-		print "<html>";
-		print "<head>";
-		print "<link href='tmsl.css' rel='stylesheet' type='text/css'>";
-		print "</head>";
-		print "<body>";
-		print $banner;
-		print $navBar;
+		print $beginning;
 		print "<div id='ttlBar'>Players</div>";
 		print "<div id='mainPar'>";
 		print "<form method='get'>";

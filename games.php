@@ -28,38 +28,7 @@
 	if ($season_id) $_SESSION['season_uid']=$season_id;
 	//$season_id=$_SESSION['season_uid'];
 	if ($isRef && !$adm && !$_SESSION['editTeams']) $ref_id = $_SESSION['logon_uid'];
-	print "<html>";
-	print "<head>";
-	print "<link href='tmsl.css' rel='stylesheet' type='text/css'>";
-	print "<style>td {text-align:center;}</style>";
-	print "<script language='JavaScript' type='text/javascript' src='prototype.js'></script>";
-	print "<script language='JavaScript' type='text/javascript' src='calendar.js'></script>";
-	?>
-	<script>
-		var cal = new CalendarPopup('testdiv1');
-		function upd_fld() {
-			document.forms['frm2'].sbm.disabled=false;
-			document.forms['frm2'].sbm.style.color='red';
-			document.forms['frm2'].sbm.title='click to save changes';
-		}
-		function showTeams(s) {
-			document.getElementById('teamLabel').innerHTML = 'Team:';
-			var url='ajax_DDL.php';
-			var val=$F('season_id');
-			if (s != 0) val=s;
-			var params='tbl=tmsl_team_season&keyCol=team_uid&valCol=tname&id=team_id&whr=where%20season_uid%3D' + val
-			params += '&ordr=order%20by%20tname&selectedVal=<?=$team_id?>&firstOpts=1';
-			var myAjax=new Ajax.Updater('teamDDL', url, {method: 'post', parameters: params });
-		}
-	</script>
-	<?
-	print "</head>";
-	if ($season_id) $onld="onload='showTeams($season_id);'";
-	print "<body $onld>";
-        print "<div id=container>"; 
-	echo "<div id='testdiv1' style='position:absolute;visibility:hidden;background-color:white;layer-background-color:white;'></div>";
-	print $banner;
-	print $navBar;
+	print $beginning;
 	print "<div id='ttlBar'>TMSL Games</div>";
 	print "<div id='mainPar'>";
 	//is there a date? if so, show games for that date
@@ -247,9 +216,27 @@ if ($debug) print "SELECT team_uid, UPPER(tname) as tname FROM tmsl_team_season 
 		}
 	} else print "Select the criteria for the games you wish to see and press ok.";
 	print "</div>";
-print "<div id='footer-spacer'></div>";
-print "</div >"; //end container
-print $footer;
+	print "<div id='footer-spacer'></div>";
+	print "</div >"; //end container
+	print $footer;
+?>
+	<script>
+		function upd_fld() {
+			document.forms['frm2'].sbm.disabled=false;
+			document.forms['frm2'].sbm.style.color='red';
+			document.forms['frm2'].sbm.title='click to save changes';
+		}
+		function showTeams(s) {
+			document.getElementById('teamLabel').innerHTML = 'Team:';
+			var url='ajax_DDL.php';
+			var val=$F('season_id');
+			if (s != 0) val=s;
+			var params='tbl=tmsl_team_season&keyCol=team_uid&valCol=tname&id=team_id&whr=where%20season_uid%3D' + val
+			params += '&ordr=order%20by%20tname&selectedVal=<?=$team_id?>&firstOpts=1';
+			var myAjax=new Ajax.Updater('teamDDL', url, {method: 'post', parameters: params });
+		}
+	</script>
+<?
 	print "</body>";
 	print "</html>";
 ?>

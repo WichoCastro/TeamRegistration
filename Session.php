@@ -37,7 +37,7 @@ if (strlen($loginname) > 0)	{
 			$cp_url="Location:chgPwd.php?m=1&uid=".$_SESSION['logon_uid'];
 			$pw_redir = true;
 		}
-		//mail('futiaz@gmail.com', 'TMSL login', "{$rec['name']} has logged in. ref: {$rec['isReferee']} sql:$sql");
+		mail('futiaz@gmail.com', 'TMSL login', "{$rec['name']} has logged in. ", "FROM:noreply@tmslregistration.com");
 	}else{
 		$_SESSION['logged_in']=0;
 	}
@@ -46,4 +46,5 @@ if ($_SESSION['mask'] & 4) $adm=true;
 if ($_SESSION['isRef']) $isRef=true;
 if ($pw_redir) header($cp_url);
 include_once("tmsl_include.php");
+include_once("tmsl_config.php");
 ?>
