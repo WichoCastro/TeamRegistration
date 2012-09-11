@@ -7,7 +7,8 @@
 		
 		$redir="Location: $url";
 		
-		if (!hasPermissionEditPlayer($_SESSION['mask'], $uid)) header('Location:index.php');
+		if ($uid) 
+			if (!hasPermissionEditPlayer($_SESSION['mask'], $uid)) header('Location:index.php');
 		if ($_SESSION['mask'] & 128) $adm=true;else $adm=false;
 		
 		if ($team_id && $season_id) {
@@ -15,7 +16,7 @@
 			$team = new Team($team_id, $season_id);
 			$season = new Season($season_id);
 		} elseif ($uid)
-			$player = new Person($uid);
+			$p = new Person($uid);
 		else $uid =0;
 		
 		if ($DOB) {
@@ -62,7 +63,7 @@
         	if ($email) $msg .= $p->addEmail($uid, $email);
 			
 			//Is there already a player by that name in the db?  If so, error:
-			if ($ins) $player_exists=checkPlayerExistence($FirstName,$Middle,$LastName, $DOB);
+			if ($ins) $player_exists=checkPlayerExistence($p->firstName,$p->middleName,$p->lastName, $p->dob);
 			
 			if (!$confirm && $player_exists[0]) {
 				if ($player_exists[1] == 'There is already a player by that name in the database') $msg = $player_exists[1];

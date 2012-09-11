@@ -27,6 +27,8 @@ class Person {
   var $yellowCards;
   var $redCards;
   var $basicFields;
+  var $seasonTeamFields;
+  var $mask;
 
   function Person($id, $teamId = false, $seasonId = false) {
     $this->set('id', $id);
@@ -53,22 +55,13 @@ class Person {
 						);
 	foreach($this->basicFields as $attr=>$fld) {
 		$this->$attr = $rec[$fld];
-	}					
-    //$this->firstName = $rec['fname'];
-    //$this->lastName = $rec['lname'];
-	//$this->middleName = $rec['mname'];
+	}
     $this->fullName = $rec['fname'] . ' ' . $rec['lname'];
     $this->email = $rec['email'];
-    //$this->phone = $rec['phone'];
-	//$this->addr = $rec['addr'];
-	//$this->city = $rec['city'];
-	//$this->state = $rec['state'];
-	//$this->zip = $rec['zip'];
     $this->dob = $rec['DOB'];
     $this->dobValidated = $rec['DOB_validated'];
     $this->pic = $rec['pic_on_file'];
-    $this->suspended = $this->isSuspended();
-    $this->getCards();
+    $this->isBoardMember = $rec['boardMember'];
     if ($teamId && $seasonId) {
       $sql = "SELECT * FROM tmsl_player_team WHERE player_uid = $id AND team_uid = $teamId AND season_uid = $seasonId";
       $res = mysql_query($sql);
@@ -76,12 +69,14 @@ class Person {
 	  foreach($this->seasonTeamFields as $attr=>$fld) {
 		$this->$attr = $rec[$fld];
 	  }
-      //$this->jersey = $rec['jersey_no'];
-      //$this->registered = $rec['registered'];
-      //$this->notes = $rec['notes'];
-      //$this->waiverSigned = $rec['waiver_signed'];
-      //$this->balance = $rec['balance'];
-    }
+	  
+      $this->suspended = $this->isSuspended();
+      $this->getCards();
+	}
+    $sql = "SELECT * FROM tmsl_user WHERE player_uid = $id";
+	$res = mysql_query($sql);
+	$rec = mysql_fetch_assoc($res);
+	$this->mask = $rec['mask'];
   }
 
   function getCards() {
@@ -106,6 +101,7 @@ class Person {
   function writeBasicInfoToDB() {
   	$a = array();
   	$sql = "UPDATE tmsl_player SET ";
+	
 	foreach($this->basicFields as $attr=>$fld) {
 		$a[] = $fld . " = '" . $this->$attr . "'";
 	}
@@ -113,6 +109,7 @@ class Person {
 		$a[] = "DOB = '" . $this->dob . "'"; 
 	$sql .= implode(', ', $a);
   	$sql .= " WHERE uid = ". $this->id;
+  	print $sql;
   	mysql_query($sql);
   }
 
@@ -126,7 +123,7 @@ class Person {
   	$sql .= " WHERE player_uid = ". $this->id;
   	$sql .= " AND team_uid = " . $this->teamId;
   	$sql .= " AND season_uid = " . $this->seasonId;
-  	mysql_query($sql);	
+  	mysql_query($sql);
   }
   
   function addPlayerToUserTbl() {
@@ -153,9 +150,21 @@ class Person {
   	$invEml = invalidEmail($this->id, $this->email);
     if (!$invEml)
       if (dbUpdate('tmsl_player', array('email'=>$this->email), array('uid'=>$this->id), 1))
-        return "email updated.";
+        return "";
     return $invEml;
   }
+  function updateMask($bit, $onOff) {
+  	if ($this->mask & $bit) {
+		if($onOff == 'off'){
+			$this->mask -=  $bit;
+		} 
+	} else {
+		if ($onOff == 'on') { 
+			$this->mask +=  $bit;
+		}	
+	}
+	dbUpdate('tmsl_user', array('mask'=>$this->mask), array('player_uid'=>$this->id));
+  } 
   function set($varname,$value) {
     $this->$varname=$value;
   }

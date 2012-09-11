@@ -28,52 +28,7 @@
     if (hasPermission($_SESSION['mask'], $team_id, $season_id)) $mgr=true;else $mgr=false;
     if ($_SESSION['mask'] & 4) $adm=true;else $adm=false;
 
-    //FIX -- put this somewhere common
-    print "<html>";
-    print "<head>";
-    print "<meta charset='UTF-8'>";
-    print "<link href='tmsl.css' rel='stylesheet' type='text/css'>";
-?>
-<script language='JavaScript' type='text/javascript' src='prototype.js'></script>
-<script language='JavaScript' type='text/javascript' src='tmsl.js'></script>
-<script>
-  function help_win() {
-    window.open('rosterHelp.php', 'helpWin', 'width=500, height=600, location=no, toolbar=no, menubar=no, titlebar=no, scrollbars=yes');
-  }
-  function signWaiver(player_uid) {
-    var url='ajax_sign_waiver.php';
-    var params="uid=" + player_uid + "&team_id=<?=$team_id?>&season_id=<?=$season_id?>";
-    var myAjax=new Ajax.Request(url, {method: 'post', parameters: params, onComplete:function() {toggle_waiver_icon(player_uid, true);} });
-  }
-  function unSignWaiver(player_uid) {
-    var url='ajax_sign_waiver.php';
-    var params="uid=" + player_uid + "&team_id=<?=$team_id?>&season_id=<?=$season_id?>&actn=unsign";
-    var myAjax=new Ajax.Request(url, {method: 'post', parameters: params, onComplete:function() {toggle_waiver_icon(player_uid, false);} });
-  }
-  function toggle_waiver_icon(player_uid, s) {
-    if (s) {
-      $('waiver_' + player_uid).innerHTML = "<img alt='Waiver Signed' src='images/waiver_signed.png' title='Waiver Signed' border='0'>";
-      $('waiver_' + player_uid).onclick = function() {unSignWaiver(player_uid);}
-    } else {
-      $('waiver_' + player_uid).innerHTML = "<img alt='Waiver Not Signed' src='images/waiver_unsigned.png' title='Waiver Not Signed; Click to Mark as Signed.' border='0'>";
-      $('waiver_' + player_uid).onclick = function() {signWaiver(player_uid);}
-    }  
-  }
-  function updt_colors() {
-    var url='ajax_updt.php';
-    var inpt_id = 'colrz';
-    var col = $F(inpt_id);
-    var params = 'tbl=tmsl_team_season&fld=colors&team_id=<?=$team_id?>&season_id=<?=$season_id?>&val='+col;
-    var dv='sp_colrz';
-    var myAjax=new Ajax.Request(url, {method: 'post', parameters: params });
-  }
-</script>
-<?  
-    print "</head>";
-    print "<body>";
-    print "<div id='container'>"; 
-    print $banner;
-    print $navBar;
+    print $beginning;
     print "<div id='ttlBar'>Team Roster <span onclick='help_win()'><img src='images/q.jpg' alt='Help' title='Help' border='0'></span></div>";
     print "<div id='mainPar'>";
 
@@ -89,11 +44,6 @@
 
         $team = new Team($team_id, $season_id);
 
-        //this is UGLY. we gone get riddenit
-        foreach ($arrPlayerFields as $colName=>$display) {
-          $flds[]="$colName AS $display";
-        }
-
         foreach ($team->players as $p) 
           $person[$p] = new Person($p, $team_id, $season_id); 
 
@@ -106,7 +56,7 @@
         if ($next_season_id) 
           print "<a href='roster.php?team_id=$team_id&season_id=$next_season_id'><img alt='Edit' src='images/arrow_right.png' title='Next Season' border='0'></a>";
         if ($mgr) print "<br><span style='font-size:16pt'>Colors: 
-          <span id='sp_colrz'><input id='colrz' onchange='updt_colors()' onclick='select();' value='{$team->colors}'></span></span>";
+          <span id='sp_colrz'><input id='colrz' onchange='updt_colors()' onclick='select();' value='{$team->colors}' size=50></span></span>";
 
         print "<br/>Team Reps:<br/>";
         foreach($team->reps as $rep_id) {
@@ -376,5 +326,41 @@
     print $footer;
     print "</body>";
     print "</html>";
+?>
+<script language='JavaScript' type='text/javascript' src='prototype.js'></script>
+<script language='JavaScript' type='text/javascript' src='tmsl.js'></script>
+<script>
+  function help_win() {
+    window.open('rosterHelp.php', 'helpWin', 'width=500, height=600, location=no, toolbar=no, menubar=no, titlebar=no, scrollbars=yes');
+  }
+  function signWaiver(player_uid) {
+    var url='ajax_sign_waiver.php';
+    var params="uid=" + player_uid + "&team_id=<?=$team_id?>&season_id=<?=$season_id?>";
+    var myAjax=new Ajax.Request(url, {method: 'post', parameters: params, onComplete:function() {toggle_waiver_icon(player_uid, true);} });
+  }
+  function unSignWaiver(player_uid) {
+    var url='ajax_sign_waiver.php';
+    var params="uid=" + player_uid + "&team_id=<?=$team_id?>&season_id=<?=$season_id?>&actn=unsign";
+    var myAjax=new Ajax.Request(url, {method: 'post', parameters: params, onComplete:function() {toggle_waiver_icon(player_uid, false);} });
+  }
+  function toggle_waiver_icon(player_uid, s) {
+    if (s) {
+      $('waiver_' + player_uid).innerHTML = "<img alt='Waiver Signed' src='images/waiver_signed.png' title='Waiver Signed' border='0'>";
+      $('waiver_' + player_uid).onclick = function() {unSignWaiver(player_uid);}
+    } else {
+      $('waiver_' + player_uid).innerHTML = "<img alt='Waiver Not Signed' src='images/waiver_unsigned.png' title='Waiver Not Signed; Click to Mark as Signed.' border='0'>";
+      $('waiver_' + player_uid).onclick = function() {signWaiver(player_uid);}
+    }  
+  }
+  function updt_colors() {
+    var url='ajax_updt.php';
+    var inpt_id = 'colrz';
+    var col = $F(inpt_id);
+    var params = 'tbl=tmsl_team_season&fld=colors&team_id=<?=$team_id?>&season_id=<?=$season_id?>&val='+col;
+    var dv='sp_colrz';
+    var myAjax=new Ajax.Request(url, {method: 'post', parameters: params });
+  }
+</script>
+<?  
   }else include("login.php");
 ?>

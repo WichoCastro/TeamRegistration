@@ -8,8 +8,8 @@
 		print "<form method='get'>";
 		print "<table border='1' align='center'>";
 
-		print "<tr><td>Last Name:</td><td><input type='text' name='lname' value='$lname'></td></tr>";
-		print "<tr><td>First Name:</td><td><input type='text' name='fname' value='$fname'>";
+		print "<tr><td>Last Name:</td><td><input type='text' name='lname' value='$lname' size=40></td></tr>";
+		print "<tr><td>First Name:</td><td><input type='text' name='fname' value='$fname' size=40>";
 		print "<input type='hidden' name='addUser' value='$addUser'>";
 		print "<input type='hidden' name='getTeamRep' value='$getTeamRep'>";
 		print "<input type='hidden' name='team_id' value='$team_id'>";
@@ -94,7 +94,7 @@
 			print "</table>";
 		}
 		if ($team_id) print "<br/>Player is not in TMSL's database --<a href='editPlayer.php?team_id=$team_id&season_id=$season_id&add=1'>add a new player</a>";
-		elseif ($_SESSION['mask']>3) print "<br/><input type='button' value='Add a New Player' onclick='window.location=\"editPlayer.php?add=1\"'>";
+		//elseif ($_SESSION['mask']>3) print "<br/><input type='button' value='Add a New Player' onclick='window.location=\"editPlayer.php?add=1\"'>";
 
 		print "</div>";
 
