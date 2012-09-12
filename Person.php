@@ -109,17 +109,25 @@ class Person {
 		$a[] = "DOB = '" . $this->dob . "'"; 
 	$sql .= implode(', ', $a);
   	$sql .= " WHERE uid = ". $this->id;
-  	print $sql;
   	mysql_query($sql);
   }
 
   function writeSeasonTeamInfoToDB() {
+  	//careful here. sets all kinds of variables.
     $a = array();
   	$sql = "UPDATE tmsl_player_team SET ";
 	foreach($this->seasonTeamFields as $attr=>$fld) {
 		$a[] = $fld . " = '" . $this->$attr . "'";
 	}
 	$sql .= implode(', ', $a);
+  	$sql .= " WHERE player_uid = ". $this->id;
+  	$sql .= " AND team_uid = " . $this->teamId;
+  	$sql .= " AND season_uid = " . $this->seasonId;
+  	mysql_query($sql);
+  }
+  
+  function writeJerseyToDB() {
+  	$sql = "UPDATE tmsl_player_team SET jersey_no = {$this->jersey}";
   	$sql .= " WHERE player_uid = ". $this->id;
   	$sql .= " AND team_uid = " . $this->teamId;
   	$sql .= " AND season_uid = " . $this->seasonId;

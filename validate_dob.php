@@ -17,7 +17,7 @@
 		print "<div id='mainPar'>";
 
 		print "<div id='dob_doc'>";
-		$p_uid=str_pad($uid, 5, "0", STR_PAD_LEFT);
+		$p_uid=str_pad($player_id, 5, "0", STR_PAD_LEFT);
 		if (file_exists("ids/$p_uid.jpg")) $img="$p_uid.jpg";
 		if (!$img) if (file_exists("ids/$p_uid.png")) $img="$p_uid.png";
 		if (!$img) $img='image_not_found.jpg';

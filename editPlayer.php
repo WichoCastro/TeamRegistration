@@ -94,9 +94,10 @@
 				$p->id = $uid;
 				$p->writeBasicInfoToDB();
 				if ($team_id) {
-					$msg=addPlayerToTeam($uid, $team_id, $season_id);
+					$p->writeJerseyToDB();
+					$msg = addPlayerToTeam($uid, $team_id, $season_id);
+					$url = "invoice.php?team_id=$team_id&season_id=$season_id";
 				}
-				$p->writeSeasonTeamInfoToDB();
 				if (strlen($msg)<=1) {
 					if (!$url) $redir="Location: roster.php";else $redir="Location:$url";
 					header($redir);
@@ -139,6 +140,7 @@
 			print "<form name='frm' id='frm' method='post'>";
 			print "<table align='center'>";
 			print "<input type='hidden' name='team_id' value='$team_id'>";
+			print "<input type='hidden' name='season_id' value='$season_id'>";
 			foreach ($form_labels as $key=>$display) {
 				$fld = $form_fields[$key];
 				$attr = $person_fields[$key];
