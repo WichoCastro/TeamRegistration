@@ -60,7 +60,9 @@
 
         print "<br/>Team Reps:<br/>";
         foreach($team->reps as $rep_id) {
-          print $person[$rep_id]->fullName . "<br/>";
+          if (!$person[$rep_id]) {$p = new Person($rep_id); print  $p->fullName . "<br/>";}
+		  else 
+		    print $person[$rep_id]->fullName . "<br/>";
         }
 
         //FIX -- mgr doesn't cut it, ese
