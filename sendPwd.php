@@ -7,10 +7,10 @@
 			else {
 				$sha1=getScalar('u.name', trim($username), 'pwd', 'tmsl_user u JOIN tmsl_player p ON u.player_uid=p.uid');
 				$msg = "An email has been sent to: $email. Follow the instructions there.";
-				$link="http://tmslregistration.com/pwdInit.php?uid=$uid&p=".sha1($uid);
+				$link="$site_url/pwdInit.php?uid=$uid&p=".sha1($uid);
 				$body="You can reset your TMSL password by clicking this link: $link";
 				$body.= "  Your password will then be the same as your username (in lower case).";
-				mail($email, 'TMSL info', $body, 'FROM:noreply@tmslregistration.com');
+				mail($email, 'TMSL info', $body, "$noreply");
 			}
 		}
 		print "<html>";

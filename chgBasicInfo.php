@@ -5,6 +5,7 @@
   print "<head>";
   print "<link href='tmsl.css' rel='stylesheet' type='text/css'>";
   print "<script language='JavaScript' type='text/javascript' src='prototype.js'></script>";
+  print "<script language='JavaScript' type='text/javascript' src='tmsl.js'></script>";
   print "</head>";
   print "<body>";
   print "<div id=container>"; 

@@ -44,7 +44,8 @@ class Person {
 				  		'addr'=>'addr',
 				  		'city'=>'city',
 				  		'state'=>'state',
-				  		'zip'=>'zip'
+				  		'zip'=>'zip',
+				  		'phone'=>'phone'
 						);
 	$this->seasonTeamFields = array(
 						'jersey'=>'jersey_no',

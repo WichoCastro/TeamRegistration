@@ -555,7 +555,7 @@
   }
   
   function notifyPlayerAccount($pid, $email) {
-    mail($email, 'test', 'hi', 'FROM:noreply@tmslregistration.com');
+    mail($email, 'test', 'hi', "$noreply");
   }
   
 	function getUsernameFromName($nm, $format='') {
@@ -580,10 +580,10 @@
 		$pwd = genPwd($uid);
 		$to = getUserEmail($uid);
 		$subj = 'TMSL Account Info';
-		$body = "You can now logon to the TMSL Registration Site (http://tmslregistration.com). ";
+		$body = "You can now logon to the TMSL Registration Site ($site_url). ";
 		$body .= "Your username is $to and your password is $pwd. "; 
 		$body .= "Log on to change your password, complete registration, and so forth.";
-		mail($to, $subj, $body, 'FROM:noreply@tmslregistration.com');
+		mail($to, $subj, $body, "$noreply");
 		$vals['pwd'] = sha1($pwd);
 		$vals['player_uid']=$uid;
 		return dbInsert('tmsl_user', $vals, 1, 1);
@@ -592,10 +592,10 @@
 	function sendNewUserEmail($e, $pwd) {
 		$to = $e;
 		$subj = 'TMSL Account Info';
-		$body = "You can now log on to the TMSL Registration Site (http://tmslregistration.com). ";
+		$body = "You can now log on to the TMSL Registration Site ($site_url). ";
 		$body .= "Your username is $to and your password is $pwd. "; 
 		$body .= "Log on to change your password, complete registration, and so forth.";
-		mail($to, $subj, $body, 'FROM:noreply@tmslregistration.com');
+		mail($to, $subj, $body, "$noreply");
 	}
 
 	function genPwd($uid) {

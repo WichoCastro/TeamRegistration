@@ -94,10 +94,10 @@
       if ($email) {
         print "An email has been sent to: $email";
 	$e = urlencode($email);
-        $link="http://tmslregistration.com/pwdInit.php?uid=$player_id&p=$p_code&e=$e";
+        $link="$site_url/pwdInit.php?uid=$player_id&p=$p_code&e=$e";
         $body="Click this link to create your TMSL account: $link";
         $body.= "  You will be asked to create a password and then you can login and register electronically.";
-        mail($email, 'TMSL account', $body, 'FROM:noreply@tmslregistration.com');
+        mail($email, 'TMSL account', $body, "FROM:$noreply");
       }
     } else { //email exists
       print "<br/>This is the email we have on file for you. It will be your username the first time you log in.";

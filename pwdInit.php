@@ -20,7 +20,7 @@
       if($e) {
         //if (dbupdate('tmsl_player', array('email'=>urldecode($e)), array('uid'=>$uid))) print "Your email has been updated. <a href='basicInfo.php'>Back to Basic Info</a>";
         print addEmail($uid, urldecode($e));
-        print "<br/><a href='basicInfo.php'>Back to Basic Info</a>";
+        print "<br/><a href='basicInfo.php'>Back to Basic Info</a><br/>";
       } 
         print "
           Set your password here. It must be between 4 and 20 characters.<br/><br/><br/>

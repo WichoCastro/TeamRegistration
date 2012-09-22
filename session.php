@@ -39,7 +39,6 @@ if (strlen($loginname) > 0)	{
 			$cp_url="Location:chgPwd.php?m=1&uid=".$_SESSION['logon_uid'];
 			$pw_redir = true;
 		}
-		//mail('futiaz@gmail.com', 'TMSL login', "{$rec['name']} has logged in. ", "FROM:noreply@tmslregistration.com");
 		if (!$_SESSION['logged']) {
 			dbInsert('tmsl_login', array('uid'=>$_SESSION['logon_uid'], 'ip'=>$_SERVER['REMOTE_ADDR']));
 			$_SESSION['logged']=true;

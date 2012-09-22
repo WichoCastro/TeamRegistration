@@ -60,9 +60,11 @@
 
         print "<br/>Team Reps:<br/>";
         foreach($team->reps as $rep_id) {
-          if (!$person[$rep_id]) {$p = new Person($rep_id); print  $p->fullName . "<br/>";}
+          if (!$person[$rep_id]) 
+            $p = new Person($rep_id);
 		  else 
-		    print $person[$rep_id]->fullName . "<br/>";
+		  	$p = $person[$rep_id];
+		  print "<a href='mailto:" . $p->email . "'>" . $p->fullName . "</a> " . $p->phone ."<br/>";
         }
 
         //FIX -- mgr doesn't cut it, ese

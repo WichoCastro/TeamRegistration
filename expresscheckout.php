@@ -1,6 +1,7 @@
 <?php
 
 require_once ("paypalfunctions.php");
+require_once ("tmsl_config.php");
 // ==================================
 // PayPal Express Checkout Module
 // ==================================
@@ -26,7 +27,7 @@ $paymentType = "Sale";
 //'
 //' This is set to the value entered on the Integration Assistant 
 //'------------------------------------
-$returnURL = "http://tmslregistration.com/payReview.php?player_id={$_POST['player_id']}";
+$returnURL = "$site_url/payReview.php?player_id={$_POST['player_id']}";
 //$returnURL = "localhost/tmsl/payBilling.php";
 //'------------------------------------
 //' The cancelURL is the location buyers are sent to when they hit the
@@ -34,7 +35,7 @@ $returnURL = "http://tmslregistration.com/payReview.php?player_id={$_POST['playe
 //'
 //' This is set to the value entered on the Integration Assistant 
 //'------------------------------------
-$cancelURL = "http://tmslregistration.com/basicInfo.php";
+$cancelURL = "$site_url/basicInfo.php";
 
 //'------------------------------------
 //' Calls the SetExpressCheckout API call
