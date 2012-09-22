@@ -40,7 +40,9 @@
 
 				if ($success) {
 					dbUpdate('tmsl_player', array('pic_on_file'=>1), array('uid'=>$player_id));
-					header("Location:basicInfo.php");
+					if ($player_id == $_SESSION['logon_uid']) $url = "Location:basicInfo.php";
+					else $url = "Location:roster.php"; 
+					header($url);
 				} else $msg .= "Operation failed";
 			}
 		}
