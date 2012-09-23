@@ -107,10 +107,10 @@
 		print "<form method='post' action='manageSeasons.php'>";
 		//print "<input type='hidden' name='change_active' value='1'>";
 		print "<input type='hidden' name='season_id' value='$season_id'>";
-		print "<table align='center' cellpadding='7' cellspacing='0'>";
+		print "<table class='rtbl' align='center' cellpadding='7' cellspacing='0'>";
 		print "<tr><th>&nbsp;</th><th>Season</th><th>Division</th><th>From</th><th>Until</th></tr>";
 		while ($rec=mysql_fetch_array($res)) {
-			if ($prev_sd <> $rec['start_d']) print "<tr><td>&nbsp</td></tr>";
+			if ($prev_sd <> $rec['start_d']) print "<tr><td style='padding:0px' colspan=5><div style='height:3px; background-color:black'>&nbsp</div></td></tr>";
 			//if ($rec['active']) {$col="bgcolor='yellow'";$ck="checked='checked'";} else {$col=""; $ck="";}
 			//$activate="<input type='radio' name='make_active_".$rec['division_uid']."' value='".$rec['uid']."' onclick='submit();' $ck>";
 			//if ($rec['closed']) $activate="&nbsp;";
@@ -123,13 +123,13 @@
 			print "<td>".$rec['league_name']."</td>";
 			print "<td>".$rec['start_d']."</td>";
 			print "<td>".$rec['stop_d']."</td>";
-			print "<tr>";
+			print "</tr>";
 			$prev_sd = $rec['start_d'];
 		}
 		print "</table>";
 		print "<input type='submit' value='New Season' name='addSeason'>";
-		print "</form>";
 		print "<input type='button' value='Add Division' onclick='window.location=\"addDivision.php\"'>";
+		print "</form>";
 		print "</div>";
 		print $footer;
 		print "</body>";

@@ -23,3 +23,9 @@ function payAtOffice(u, t, s) {
   $('btnPayPromise').style.background='#8f8';
   alert('The office is located near First and River, at 4651 N. First Ave., Suite 204. Materials can be dropped off any time during regular business hours through the mail slot.  League office hours are Wednesdays  5-7.');
 }
+
+function moveTeam(from_s, tmz) {
+  var to_s = $F('season_id');
+  var url = 'chgTeamSeason.php?from_s=' + from_s + '&to_s=' + to_s + '&tmz=' + tmz;
+  window.location=url;
+}
