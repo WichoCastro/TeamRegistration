@@ -18,6 +18,8 @@
   foreach($games as $g) {
     $msg = "";
     $gm_id=0;
+	$center_ref_assignr_id = 0;
+	$email = '';
     $game_dt = date('Y-m-d', strtotime($g['start_time']));
     $game_tm = date('H:i', strtotime($g['start_time']));
     $game_loc = $g['venue_name'];
@@ -29,7 +31,7 @@
     $ref = $g['existing_assignments'][0]['name']; //center ref
     $ar1 = $g['existing_assignments'][1]['name']; 
     $ar2 = $g['existing_assignments'][2]['name']; 
-	$center_ref_assignr_id = $g['existing_assignments'][0]['id'];
+	//$center_ref_assignr_id = $g['existing_assignments'][0]['user_id'];
     if (!$team_h) {$msg .= "Team {$g['home_team_name']} not found ($game_dt $game_loc) -- ignoring;"; }
     if (!$team_v) {$msg .= "Team {$g['away_team_name']} not found ($game_dt $game_loc) -- ignoring;"; }
     if (!$season_uid) {$msg .= "No season for $s found ($game_dt $game_loc) -- ignoring;"; }
@@ -58,15 +60,19 @@
       $gm_id=mysql_insert_id();
     }
     if ($gm_id) {
-      $ref_id = getRefIDbyName($ref);
-      if (!$ref_id) {
-      	$email = getRefEmail($center_ref_assignr_id);
-      	$ref_id=addRef($ref, true, $email);
-	  }
-      $ar1_id=getRefIDbyName($ar1);
-      if (!$ar1_id) $ar1_id=addRef($ar1);
-      $ar2_id=getRefIDbyName($ar2);
-      if (!$ar2_id) $ar2_id=addRef($ar2); 
+      if ($ref) $center_ref_assignr_id = getAssignrID($ref);
+      if ($center_ref_assignr_id) $email = getRefEmail($center_ref_assignr_id);	
+	  print "email for $ref is $email; ref_id is $center_ref_assignr_id<br/>";
+      if ($email) $ref_id = getRefIDbyEmail($email);
+      if ($email && !$ref_id) {
+  	    $ref_id=addRef($ref, true, $email);
+	    print "ref_id is $ref_id<br/>";
+	  } elseif (!$email) print "no ref found for {$g['home_team_name']} v. {$g['away_team_name']}<br/>";
+	  
+      //$ar1_id=getRefIDbyName($ar1);
+      //if (!$ar1_id && $ar1) $ar1_id=addRef($ar1);
+      //$ar2_id=getRefIDbyName($ar2);
+      //if (!$ar2_id && $ar2) $ar2_id=addRef($ar2); 
       dbDelete('tmsl_game_assign', array('game_uid'=>$gm_id));
       if($ref_id) mysql_query("INSERT INTO tmsl_game_assign (game_uid, user_uid, edit_right) VALUES ($gm_id, $ref_id, 2)");
       if($ar1_id) mysql_query("INSERT INTO tmsl_game_assign (game_uid, user_uid, edit_right) VALUES ($gm_id, $ar1_id, 1)");
@@ -82,6 +88,15 @@
     $qry = "https://jfarmer:ecb95b694ee9d27e821ee2e21af530bb7ba6ea7b@api.assignr.com/api/v1/games.json?search=after:%22".$fd."%22%20before:%22".$td."%22%20league:TMSL";
     $data = searchAssignrDB($qry);
     return $data;
+  }
+  
+  function getAssignrID($nm) {
+  	$nm_arr = explode(',', $nm);
+	$ln = trim($nm_arr[0]);
+	$fn = trim($nm_arr[1]);
+  	$qry = "https://jfarmer:ecb95b694ee9d27e821ee2e21af530bb7ba6ea7b@api.assignr.com/api/v1/users.json?search=first:$fn%20last:$ln";
+	$data = searchAssignrDB($qry);
+    return $data['users'][0]['id'];
   }
   
   function getRefEmail($center_ref_assignr_id) {

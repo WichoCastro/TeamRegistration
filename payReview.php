@@ -71,7 +71,6 @@ if ( $token != "" )
 			dbInsert('tmsl_pp', array('user_id'=>$_SESSION['logon_uid'], 'amt'=>$amtPaid));	
 			mail($sysAdmin, 'PP Success', 'Success', "FROM:$noreply");
 		} else {
-			print "";
 			print_r($paymentInfo);
 			dbInsert('tmsl_pp', array('user_id'=>$_SESSION['logon_uid'], 'amt'=>'fail'));
 			mail($sysAdmin, 'PP Fail', 'PP Fail -- check log -- Problem with ConfirmPayment Call', "FROM:$noreply");

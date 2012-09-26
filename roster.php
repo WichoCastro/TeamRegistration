@@ -232,7 +232,7 @@
               if ($adm && $player->notes)
                 print "
                   <td>
-                    <img alt='Notes' src='images/comment.png' title=\"{$playerDetails['Notes']}\" border='0'>
+                    <img alt='Notes' src='images/comment.png' title=\"{$player->notes}\" border='0'>
                   </td>";
               if ($adm)
                 print "

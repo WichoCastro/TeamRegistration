@@ -13,6 +13,8 @@
 		$str .= "<tr><td><a href='reportPlayerRegistration.php'>Player Registration</a></td></tr>";
 		$str .= "<tr><td><a href='reportYoungsters.php'>Players Under 45 in the Over 45 Division</a></td></tr>";
 		$str .= "<tr><td><a href='reportExport.php'>Export Data To CSV</a></td></tr>";
+		$str .= "<tr><td><a href='reportAccessLog.php'>Access Log</a></td></tr>";
+		$str .= "<tr><td><a href='reportPayPalLog.php'>PayPal Log</a></td></tr>";
 		$str .= "<tr><td><a href='reportChangeLog.php'>Change Log</a></td></tr>";
 		$str .= "<tr><td><a href='reportBadQueryLog.php'>Bad Query Log</a></td></tr>";
 		$str .= "</table>";

@@ -492,7 +492,19 @@
 		$fullname=strtolower($fn.$ln);
 		$uname =  strtolower($fn[0].$ln);
 		//$arr=dbSelectSQL("SELECT uid FROM tmsl_player WHERE LOWER(CONCAT(fname,lname)) LIKE '{$fullname}%'");
-		$arr=dbSelectSQL("SELECT player_uid as uid FROM tmsl_user WHERE name LIKE '{$uname}%' AND isReferee=1");
+		$arr=dbSelectSQL("SELECT player_uid as uid FROM tmsl_player WHERE name LIKE '{$fullname}%'");
+		if (empty($arr)) return 0;
+		if (count($arr) > 1) {
+			//handle this later -- there could be two referees whose names match. check the player table
+			return 0;
+		}
+		return $arr[0]['uid'];
+	}
+
+	function getRefIDbyEmail($email) {
+		if (!$email) return 0;
+		$sql = "SELECT uid as uid FROM tmsl_player WHERE email LIKE '{$email}'";
+		$arr=dbSelectSQL($sql);
 		if (empty($arr)) return 0;
 		if (count($arr) > 1) {
 			//handle this later -- there could be two referees whose names match. check the player table
