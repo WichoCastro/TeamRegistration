@@ -374,8 +374,8 @@
 		if (!$override) $msg=verifyAddPlayerToTeam($player_id, $team_id, $season_id);
 		else $msg=1;
 		if ($msg != "1") return $msg;
-		//$arr=dbSelect('tmsl_season', array('case when now() > halfway_date then (cost_per_player/2+10) else cost_per_player end as cpp'), array('uid'=>$season_id));
-		$arr=dbSelect('tmsl_season', array('case when now() > halfway_date then (cost_per_player-10) else cost_per_player end as cpp'), array('uid'=>$season_id));
+		$arr=dbSelect('tmsl_season', array('case when now() > halfway_date then (cost_per_player/2+10) else cost_per_player end as cpp'), array('uid'=>$season_id));
+		//$arr=dbSelect('tmsl_season', array('case when now() > halfway_date then (cost_per_player-10) else cost_per_player end as cpp'), array('uid'=>$season_id));
 		$fee=$arr[0]['cpp'];
 		$bm=getScalar('uid', $player_id, 'boardMember', 'tmsl_player');
 		if ($bm) $fee=0;
