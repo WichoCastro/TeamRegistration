@@ -515,7 +515,7 @@
 
 	function addRef($nm, $addLogOn=true, $email='') {
 		//is there someone with this name in the player table?
-    	$nm_arr = explode(',', $nm);
+    	        $nm_arr = explode(',', $nm);
 		$ln = trim($nm_arr[0]);
 		$fn = trim($nm_arr[1]);
 		$fullname=strtolower($fn.$ln);
@@ -531,7 +531,7 @@
 			dbInsert('tmsl_player', $vals);$pid=mysql_insert_id();
 		}
 		if (!$uid && $addLogOn && $pid) {
-			addPlayerToUserTbl($pid, array('isReferee'=>1));
+			addPlayerToUserTbl($pid, array('isReferee'=>1, 'email'=>$email));
 		}
 		return $pid;
 	}
@@ -590,14 +590,21 @@
 		$user_id=getScalar('player_uid', $uid, 'uid', 'tmsl_user');
 		if ($user_id) return 0;
 		$pwd = genPwd($uid);
-		$to = getUserEmail($uid);
-		$subj = 'TMSL Account Info';
-		$body = "You can now logon to the TMSL Registration Site ($site_url). ";
-		$body .= "Your username is $to and your password is $pwd. "; 
-		$body .= "Log on to change your password, complete registration, and so forth.";
-		mail($to, $subj, $body, "$noreply");
+    $email = $vals['email'] ? $vals['email'] : getUserEmail($uid);
+    if (!invalidEmail($pid, $email)) {
+		  $subj = 'TMSL Account Info';
+		  $body = "You can now logon to the TMSL Registration Site ($site_url). ";
+		  $body .= "Your username is $to and your password is $pwd. "; 
+		  $body .= "Log on to change your password, complete registration, and so forth.";
+      if ($environment == 'production')
+		    mail($email, $subj, $body, "$noreply");
+      else 
+        mail('john@3r3w.org', $subj, $body, "$noreply");
+    }
 		$vals['pwd'] = sha1($pwd);
 		$vals['player_uid']=$uid;
+    $vals['name'] = $email;
+    unset($vals['email']);
 		return dbInsert('tmsl_user', $vals, 1, 1);
 	}
 	
@@ -607,7 +614,7 @@
 		$body = "You can now log on to the TMSL Registration Site ($site_url). ";
 		$body .= "Your username is $to and your password is $pwd. "; 
 		$body .= "Log on to change your password, complete registration, and so forth.";
-		mail($to, $subj, $body, "$noreply");
+		//mail($to, $subj, $body, "$noreply");
 	}
 
 	function genPwd($uid) {
