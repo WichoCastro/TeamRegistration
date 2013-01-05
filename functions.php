@@ -313,9 +313,10 @@
 	}
 
 	function badQueryLog($act, $badsql) {
+		//assumes 6 columns
 		$badsql=mysql_escape_string($badsql);
-		$sql = "INSERT INTO tmsl_bad_query_log VALUES (null,".$_SESSION['logon_uid'].", '$act', '$badsql', '".$_SERVER['REMOTE_ADDR']."', now())";
-		mysql_query($sql) or die($sql." ".mysql_error());
+		$sql = "INSERT INTO tmsl_bad_query_log VALUES (null,{$_SESSION['logon_uid']}, '$act', '$badsql', '{$_SERVER['REMOTE_ADDR']}', now())";
+		//mysql_query($sql) or die($sql." ".mysql_error());
 	}
 
 	function getTeamName($team_id, $season_id=0) {
@@ -492,7 +493,8 @@
 		$fullname=strtolower($fn.$ln);
 		$uname =  strtolower($fn[0].$ln);
 		//$arr=dbSelectSQL("SELECT uid FROM tmsl_player WHERE LOWER(CONCAT(fname,lname)) LIKE '{$fullname}%'");
-		$arr=dbSelectSQL("SELECT player_uid as uid FROM tmsl_player WHERE name LIKE '{$fullname}%'");
+		$sql = "SELECT uid FROM tmsl_player WHERE fname LIKE '{$fn}%' AND lname LIKE '{$ln}%'";
+		$arr=dbSelectSQL($sql);
 		if (empty($arr)) return 0;
 		if (count($arr) > 1) {
 			//handle this later -- there could be two referees whose names match. check the player table
@@ -503,7 +505,7 @@
 
 	function getRefIDbyEmail($email) {
 		if (!$email) return 0;
-		$sql = "SELECT uid as uid FROM tmsl_player WHERE email LIKE '{$email}'";
+		$sql = "SELECT uid FROM tmsl_player WHERE email LIKE '{$email}'";
 		$arr=dbSelectSQL($sql);
 		if (empty($arr)) return 0;
 		if (count($arr) > 1) {
@@ -515,7 +517,7 @@
 
 	function addRef($nm, $addLogOn=true, $email='') {
 		//is there someone with this name in the player table?
-    	        $nm_arr = explode(',', $nm);
+    	$nm_arr = explode(',', $nm);
 		$ln = trim($nm_arr[0]);
 		$fn = trim($nm_arr[1]);
 		$fullname=strtolower($fn.$ln);
@@ -567,7 +569,7 @@
   }
   
   function notifyPlayerAccount($pid, $email) {
-    mail($email, 'test', 'hi', "$noreply");
+    //mail($email, 'test', 'hi', "$noreply");
   }
   
 	function getUsernameFromName($nm, $format='') {
@@ -590,21 +592,21 @@
 		$user_id=getScalar('player_uid', $uid, 'uid', 'tmsl_user');
 		if ($user_id) return 0;
 		$pwd = genPwd($uid);
-    $email = $vals['email'] ? $vals['email'] : getUserEmail($uid);
-    if (!invalidEmail($pid, $email)) {
-		  $subj = 'TMSL Account Info';
-		  $body = "You can now logon to the TMSL Registration Site ($site_url). ";
-		  $body .= "Your username is $to and your password is $pwd. "; 
-		  $body .= "Log on to change your password, complete registration, and so forth.";
-      if ($environment == 'production')
-		    mail($email, $subj, $body, "$noreply");
-      else 
-        mail('john@3r3w.org', $subj, $body, "$noreply");
-    }
+                $email = $vals['email'] ? $vals['email'] : getUserEmail($uid);
+                if (!invalidEmail($pid, $email))
+		$subj = 'TMSL Account Info';
+		$body = "You can now logon to the TMSL Registration Site ($site_url). ";
+		$body .= "Your username is $to and your password is $pwd. "; 
+		$body .= "Log on to change your password, complete registration, and so forth.";
+                //FIX -- uncomment on live:
+                if ($environment == 'production')
+		  			mail($email, $subj, $body, "$noreply");
+                else 
+                  	mail('john@3r3w.org', $subj, $body, "$noreply");
 		$vals['pwd'] = sha1($pwd);
 		$vals['player_uid']=$uid;
-    $vals['name'] = $email;
-    unset($vals['email']);
+                $vals['name'] = $email;
+                unset($vals['email']);
 		return dbInsert('tmsl_user', $vals, 1, 1);
 	}
 	
@@ -614,7 +616,7 @@
 		$body = "You can now log on to the TMSL Registration Site ($site_url). ";
 		$body .= "Your username is $to and your password is $pwd. "; 
 		$body .= "Log on to change your password, complete registration, and so forth.";
-		//mail($to, $subj, $body, "$noreply");
+		mail($to, $subj, $body, "$noreply");
 	}
 
 	function genPwd($uid) {
